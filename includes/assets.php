@@ -78,6 +78,11 @@ jQuery(function($){
 		'GTIN, UPC, EAN, or ISBN',
 		'Shipping class'
 	];
+	var keepSkuFieldsVisible = function(context){
+		$(context || document).find('#variable_product_options .woocommerce_variation input[name^="variable_sku"], #variable_product_options .woocommerce_variation input[id^="variable_sku"]').each(function(){
+			$(this).show().closest('p.form-row, p, .form-field').show();
+		});
+	};
 	var hideUnusedVariationFields = function(context){
 		var $context = $(context || document);
 		$.each(hiddenFieldSelectors, function(i, selector){
@@ -92,6 +97,7 @@ jQuery(function($){
 				$label.hide();
 			}
 		});
+		keepSkuFieldsVisible($context);
 	};
 	hideUnusedVariationFields(document);
 	$(document).on('woocommerce_variations_loaded woocommerce_variations_added', function(){

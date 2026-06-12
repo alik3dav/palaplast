@@ -71,6 +71,12 @@
 	display: none !important;
 }
 
+/* Keep the variation SKU/product-code field visible for editing. */
+#variable_product_options .woocommerce_variation .variable_sku_field,
+#variable_product_options .woocommerce_variation p[class*="variable_sku"] {
+	display: block !important;
+}
+
 .palaplast-colors-card {
 	max-width: 900px;
 }
@@ -102,4 +108,9 @@
 #variable_product_options .woocommerce_variation label:has(input[name^="variable_is_virtual"]),
 #variable_product_options .woocommerce_variation select[name^="variable_shipping_class"] {
 	display: none !important;
+}
+
+#variable_product_options .woocommerce_variation input[name^="variable_sku"],
+#variable_product_options .woocommerce_variation input[id^="variable_sku"] {
+	display: inline-block !important;
 }
