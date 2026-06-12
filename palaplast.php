@@ -5,7 +5,7 @@
  * Version: 1.8.7
  * Author: Palaplast
  * License: GPL-2.0-or-later
- * Text Domain: palaplast
+ * Text Domain: Palaplast-main
  * Requires at least: 5.8
  * Requires PHP: 7.4
  * WC requires at least: 6.0

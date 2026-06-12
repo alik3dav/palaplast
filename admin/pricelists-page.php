@@ -9,7 +9,7 @@ function palaplast_render_pricelists_page() {
 	}
 
 	$pricelists = palaplast_get_pricelists();
-	$edit_id    = isset( $_GET['edit_pricelist'] ) ? absint( wp_unslash( $_GET['edit_pricelist'] ) ) : 0;
+	$edit_id    = absint( filter_input( INPUT_GET, 'edit_pricelist', FILTER_SANITIZE_NUMBER_INT ) );
 	$pricelist  = ( $edit_id && isset( $pricelists[ $edit_id ] ) ) ? $pricelists[ $edit_id ] : array();
 	?>
 	<div class="wrap">
@@ -24,8 +24,8 @@ function palaplast_render_pricelists_page() {
 				<code>[palaplast_pricelists_list]</code>
 			</p>
 		</div>
-		<?php if ( isset( $_GET['pricelist_updated'] ) ) : ?><div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Pricelist saved.', 'palaplast' ); ?></p></div><?php endif; ?>
-		<?php if ( isset( $_GET['pricelist_deleted'] ) ) : ?><div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Pricelist deleted.', 'palaplast' ); ?></p></div><?php endif; ?>
+		<?php if ( filter_input( INPUT_GET, 'pricelist_updated', FILTER_SANITIZE_NUMBER_INT ) ) : ?><div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Pricelist saved.', 'palaplast' ); ?></p></div><?php endif; ?>
+		<?php if ( filter_input( INPUT_GET, 'pricelist_deleted', FILTER_SANITIZE_NUMBER_INT ) ) : ?><div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Pricelist deleted.', 'palaplast' ); ?></p></div><?php endif; ?>
 
 		<div class="card palaplast-admin-card">
 			<h2 class="palaplast-admin-card-title"><?php echo $edit_id ? esc_html__( 'Edit Pricelist', 'palaplast' ) : esc_html__( 'Add Pricelist', 'palaplast' ); ?></h2>

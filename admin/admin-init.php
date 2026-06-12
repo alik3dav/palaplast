@@ -185,7 +185,8 @@ function palaplast_render_variation_attribute_color_fields( $loop, $variation_da
 }
 
 function palaplast_save_variation_attribute_color_fields( $variation_id, $loop ) {
-	$posted_colors = isset( $_POST['palaplast_attribute_colors'][ $loop ] ) && is_array( $_POST['palaplast_attribute_colors'][ $loop ] ) ? wp_unslash( $_POST['palaplast_attribute_colors'][ $loop ] ) : array();
+	// phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce verifies the variation save request before this hook runs.
+	$posted_colors = isset( $_POST['palaplast_attribute_colors'][ $loop ] ) && is_array( $_POST['palaplast_attribute_colors'][ $loop ] ) ? map_deep( wp_unslash( $_POST['palaplast_attribute_colors'][ $loop ] ), 'sanitize_text_field' ) : array();
 	$clean_colors  = array();
 
 	foreach ( $posted_colors as $attribute_name => $color ) {
@@ -318,7 +319,8 @@ function palaplast_save_variation_table_custom_rows_field( $product ) {
 		return;
 	}
 
-	$custom_rows = isset( $_POST['palaplast_custom_rows'] ) && is_array( $_POST['palaplast_custom_rows'] ) ? wp_unslash( $_POST['palaplast_custom_rows'] ) : array();
+	// phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce verifies the product save request before this hook runs.
+	$custom_rows = isset( $_POST['palaplast_custom_rows'] ) && is_array( $_POST['palaplast_custom_rows'] ) ? map_deep( wp_unslash( $_POST['palaplast_custom_rows'] ), 'sanitize_text_field' ) : array();
 	$clean_rows  = array();
 
 	foreach ( $custom_rows as $row ) {

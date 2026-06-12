@@ -37,6 +37,7 @@ function palaplast_get_current_language_product_id( $product_id ) {
 		return $product_id;
 	}
 
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's documented filter name is intentionally external.
 	$translated_id = apply_filters( 'wpml_object_id', $product_id, 'product', true );
 
 	return $translated_id ? (int) $translated_id : $product_id;
