@@ -26,8 +26,16 @@ function palaplast_enqueue_styles() {
 function palaplast_enqueue_admin_assets( $hook_suffix ) {
 	$screen                = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
 	$is_certificate_editor = in_array( $hook_suffix, array( 'post.php', 'post-new.php' ), true ) && $screen && 'palaplast_cert' === $screen->post_type;
+	$is_product_editor     = in_array( $hook_suffix, array( 'post.php', 'post-new.php' ), true ) && $screen && 'product' === $screen->post_type;
+	$is_plugin_page        = in_array( $hook_suffix, array( 'woocommerce_page_palaplast-technical-sheets', 'woocommerce_page_palaplast-pricelists' ), true );
 
-	if ( ! in_array( $hook_suffix, array( 'woocommerce_page_palaplast-technical-sheets', 'woocommerce_page_palaplast-pricelists' ), true ) && ! $is_certificate_editor ) {
+	if ( ! $is_plugin_page && ! $is_certificate_editor && ! $is_product_editor ) {
+		return;
+	}
+
+	wp_enqueue_style( 'palaplast-admin', PALAPLAST_PLUGIN_URL . 'assets/css/palaplast-admin.css', array(), PALAPLAST_VERSION );
+
+	if ( $is_product_editor ) {
 		return;
 	}
 
@@ -40,7 +48,6 @@ function palaplast_enqueue_admin_assets( $hook_suffix ) {
 	}
 
 	wp_enqueue_media();
-	wp_enqueue_style( 'palaplast-admin', PALAPLAST_PLUGIN_URL . 'assets/css/palaplast-admin.css', array(), PALAPLAST_VERSION );
 	wp_add_inline_script(
 		'jquery-core',
 		"jQuery(function($){var frame;$('.palaplast-select-pdf').on('click',function(e){e.preventDefault();if(frame){frame.open();return;}frame=wp.media({title:'" . esc_js( $selection_title ) . "',button:{text:'" . esc_js( __( 'Use PDF', 'palaplast' ) ) . "'},library:{type:'application/pdf'},multiple:false});frame.on('select',function(){var attachment=frame.state().get('selection').first().toJSON();$('#palaplast_attachment_id').val(attachment.id);$('.palaplast-selected-file').text(attachment.filename || attachment.url);});frame.open();});$('.palaplast-remove-pdf').on('click',function(e){e.preventDefault();$('#palaplast_attachment_id').val('');$('.palaplast-selected-file').text('" . esc_js( __( 'No file selected.', 'palaplast' ) ) . "');});});"
