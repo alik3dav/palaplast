@@ -251,7 +251,12 @@ function palaplast_certificates_list_shortcode( $atts ) {
 						<?php endif; ?>
 						<div class="palaplast-certificate-card__body">
 							<div class="palaplast-pdf-list-item__title"><?php echo esc_html( get_the_title( $certificate ) ); ?></div>
-							<div class="palaplast-certificate-content"><?php echo wp_kses_post( apply_filters( 'the_content', (string) $certificate->post_content ) ); ?></div>
+							<div class="palaplast-certificate-content">
+								<?php
+								// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Reuse WordPress core content formatting filters.
+								echo wp_kses_post( apply_filters( 'the_content', (string) $certificate->post_content ) );
+								?>
+							</div>
 							<?php if ( $certificate_pdf_url ) : ?>
 								<span class="palaplast-pdf-list-item__action"><?php esc_html_e( 'Download PDF', 'palaplast' ); ?></span>
 							<?php endif; ?>
@@ -401,9 +406,9 @@ function palaplast_get_product_for_pdf_output( $product_id = 0 ) {
 		}
 	}
 
-	global $product;
-	if ( $product instanceof WC_Product ) {
-		return $product;
+	$palaplast_global_product = isset( $GLOBALS['product'] ) ? $GLOBALS['product'] : null;
+	if ( $palaplast_global_product instanceof WC_Product ) {
+		return $palaplast_global_product;
 	}
 
 	$current_post_id = get_the_ID();

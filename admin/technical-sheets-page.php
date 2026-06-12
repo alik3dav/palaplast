@@ -9,7 +9,7 @@ function palaplast_render_technical_sheets_page() {
 	}
 
 	$sheets  = palaplast_get_technical_sheets();
-	$edit_id = isset( $_GET['edit_sheet'] ) ? absint( wp_unslash( $_GET['edit_sheet'] ) ) : 0;
+	$edit_id = absint( filter_input( INPUT_GET, 'edit_sheet', FILTER_SANITIZE_NUMBER_INT ) );
 	$sheet   = ( $edit_id && isset( $sheets[ $edit_id ] ) ) ? $sheets[ $edit_id ] : array();
 	$sheet_categories = palaplast_get_technical_sheet_categories();
 	?>
@@ -31,11 +31,11 @@ function palaplast_render_technical_sheets_page() {
 			</p>
 		</div>
 
-		<?php if ( isset( $_GET['sheet_updated'] ) ) : ?>
+		<?php if ( filter_input( INPUT_GET, 'sheet_updated', FILTER_SANITIZE_NUMBER_INT ) ) : ?>
 			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Technical Sheet saved.', 'palaplast' ); ?></p></div>
 		<?php endif; ?>
 
-		<?php if ( isset( $_GET['sheet_deleted'] ) ) : ?>
+		<?php if ( filter_input( INPUT_GET, 'sheet_deleted', FILTER_SANITIZE_NUMBER_INT ) ) : ?>
 			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Technical Sheet deleted.', 'palaplast' ); ?></p></div>
 		<?php endif; ?>
 

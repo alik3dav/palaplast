@@ -219,16 +219,20 @@ function palaplast_get_wpml_aware_term_meta_value( $term_id, $meta_key ) {
 	$term_ids_to_check = array( $term_id );
 
 	if ( has_filter( 'wpml_object_id' ) ) {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's documented filter name is intentionally external.
 		$current_lang = apply_filters( 'wpml_current_language', null );
 		if ( is_string( $current_lang ) && '' !== $current_lang ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's documented filter name is intentionally external.
 			$current_lang_term_id = (int) apply_filters( 'wpml_object_id', $term_id, 'product_cat', true, $current_lang );
 			if ( $current_lang_term_id ) {
 				$term_ids_to_check[] = $current_lang_term_id;
 			}
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's documented filter name is intentionally external.
 		$default_lang = apply_filters( 'wpml_default_language', null );
 		if ( is_string( $default_lang ) && '' !== $default_lang ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's documented filter name is intentionally external.
 			$default_lang_term_id = (int) apply_filters( 'wpml_object_id', $term_id, 'product_cat', true, $default_lang );
 			if ( $default_lang_term_id ) {
 				$term_ids_to_check[] = $default_lang_term_id;

@@ -4,6 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function palaplast_render_category_sheet_add_field() {
+	wp_nonce_field( 'palaplast_save_category_sheet', 'palaplast_category_sheet_nonce' );
 	?>
 	<div class="form-field term-palaplast-sheet-wrap">
 		<label for="palaplast_technical_sheet_id"><?php esc_html_e( 'Technical Sheet', 'palaplast' ); ?></label>
@@ -14,6 +15,7 @@ function palaplast_render_category_sheet_add_field() {
 }
 
 function palaplast_render_category_sheet_edit_field( $term ) {
+	wp_nonce_field( 'palaplast_save_category_sheet', 'palaplast_category_sheet_nonce' );
 	$sheet_id        = (int) get_term_meta( $term->term_id, 'palaplast_technical_sheet_id', true );
 	$inherited_sheet = palaplast_get_category_inherited_sheet( (int) $term->term_id );
 	$inherited_name  = ! empty( $inherited_sheet['name'] ) ? (string) $inherited_sheet['name'] : '';
@@ -35,6 +37,7 @@ function palaplast_render_category_sheet_edit_field( $term ) {
 }
 
 function palaplast_render_category_pricelist_add_field() {
+	wp_nonce_field( 'palaplast_save_category_pricelist', 'palaplast_category_pricelist_nonce' );
 	?>
 	<div class="form-field term-palaplast-pricelist-wrap">
 		<label for="palaplast_pricelist_id"><?php esc_html_e( 'Pricelist PDF', 'palaplast' ); ?></label>
@@ -45,6 +48,7 @@ function palaplast_render_category_pricelist_add_field() {
 }
 
 function palaplast_render_category_pricelist_edit_field( $term ) {
+	wp_nonce_field( 'palaplast_save_category_pricelist', 'palaplast_category_pricelist_nonce' );
 	$pricelist_id       = (int) get_term_meta( $term->term_id, 'palaplast_pricelist_id', true );
 	$inherited          = palaplast_get_category_inherited_pricelist( (int) $term->term_id );
 	$inherited_name     = ! empty( $inherited['name'] ) ? (string) $inherited['name'] : '';
@@ -66,6 +70,10 @@ function palaplast_render_category_pricelist_edit_field( $term ) {
 }
 
 function palaplast_save_category_sheet( $term_id ) {
+	if ( ! isset( $_POST['palaplast_category_sheet_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['palaplast_category_sheet_nonce'] ) ), 'palaplast_save_category_sheet' ) ) {
+		return;
+	}
+
 	if ( ! isset( $_POST['palaplast_technical_sheet_id'] ) ) {
 		return;
 	}
@@ -85,6 +93,10 @@ function palaplast_save_category_sheet( $term_id ) {
 }
 
 function palaplast_save_category_pricelist( $term_id ) {
+	if ( ! isset( $_POST['palaplast_category_pricelist_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['palaplast_category_pricelist_nonce'] ) ), 'palaplast_save_category_pricelist' ) ) {
+		return;
+	}
+
 	if ( ! isset( $_POST['palaplast_pricelist_id'] ) ) {
 		return;
 	}

@@ -17,7 +17,7 @@ function palaplast_render_variation_colors_page() {
 			<p><?php esc_html_e( 'Create the color list used by the Palaplast color picker inside each product variation.', 'palaplast' ); ?></p>
 		</div>
 
-		<?php if ( isset( $_GET['colors_updated'] ) ) : ?>
+		<?php if ( filter_input( INPUT_GET, 'colors_updated', FILTER_SANITIZE_NUMBER_INT ) ) : ?>
 			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Variation colors saved.', 'palaplast' ); ?></p></div>
 		<?php endif; ?>
 
@@ -104,7 +104,7 @@ function palaplast_handle_save_variation_colors() {
 
 	check_admin_referer( 'palaplast_save_variation_colors' );
 
-	$posted_colors = isset( $_POST['palaplast_variation_colors'] ) && is_array( $_POST['palaplast_variation_colors'] ) ? wp_unslash( $_POST['palaplast_variation_colors'] ) : array();
+	$posted_colors = isset( $_POST['palaplast_variation_colors'] ) && is_array( $_POST['palaplast_variation_colors'] ) ? map_deep( wp_unslash( $_POST['palaplast_variation_colors'] ), 'sanitize_text_field' ) : array();
 	$colors        = array();
 
 	foreach ( $posted_colors as $posted_color ) {
