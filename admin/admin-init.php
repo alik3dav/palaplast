@@ -21,6 +21,8 @@ add_action( 'created_product_cat', 'palaplast_save_category_pricelist' );
 add_action( 'edited_product_cat', 'palaplast_save_category_pricelist' );
 add_action( 'woocommerce_product_options_general_product_data', 'palaplast_render_variation_table_custom_rows_field' );
 add_action( 'woocommerce_admin_process_product_object', 'palaplast_save_variation_table_custom_rows_field' );
+add_action( 'woocommerce_product_after_variable_attributes', 'palaplast_render_variation_attribute_color_fields', 10, 3 );
+add_action( 'woocommerce_save_product_variation', 'palaplast_save_variation_attribute_color_fields', 10, 2 );
 add_action( 'admin_notices', 'palaplast_render_certificates_shortcode_notice' );
 add_action( 'add_meta_boxes', 'palaplast_register_certificate_pdf_metabox' );
 add_action( 'save_post_palaplast_cert', 'palaplast_save_certificate_pdf_metabox' );
@@ -111,6 +113,93 @@ function palaplast_save_certificate_pdf_metabox( $post_id ) {
 	}
 
 	delete_post_meta( $post_id, 'palaplast_certificate_pdf_id' );
+}
+
+
+function palaplast_get_variation_attribute_color_options() {
+	return array(
+		''        => __( '— No color —', 'palaplast' ),
+		'#000000' => __( 'Black', 'palaplast' ),
+		'#ffffff' => __( 'White', 'palaplast' ),
+		'#808080' => __( 'Gray', 'palaplast' ),
+		'#ff0000' => __( 'Red', 'palaplast' ),
+		'#00a651' => __( 'Green', 'palaplast' ),
+		'#0057ff' => __( 'Blue', 'palaplast' ),
+		'#ffd400' => __( 'Yellow', 'palaplast' ),
+		'#ff8a00' => __( 'Orange', 'palaplast' ),
+		'#7b3fe4' => __( 'Purple', 'palaplast' ),
+		'#8b5a2b' => __( 'Brown', 'palaplast' ),
+	);
+}
+
+function palaplast_render_variation_attribute_color_fields( $loop, $variation_data, $variation ) {
+	if ( ! $variation instanceof WP_Post ) {
+		return;
+	}
+
+	$variation_product = wc_get_product( $variation->ID );
+	if ( ! $variation_product instanceof WC_Product_Variation ) {
+		return;
+	}
+
+	$attributes = $variation_product->get_variation_attributes();
+	if ( empty( $attributes ) ) {
+		return;
+	}
+
+	$saved_colors  = get_post_meta( $variation->ID, '_palaplast_attribute_colors', true );
+	$saved_colors  = is_array( $saved_colors ) ? $saved_colors : array();
+	$color_options = palaplast_get_variation_attribute_color_options();
+	?>
+	<div class="palaplast-variation-attribute-colors form-row form-row-full">
+		<p class="palaplast-variation-attribute-colors__title"><strong><?php esc_html_e( 'Variation Table Attribute Colors', 'palaplast' ); ?></strong></p>
+		<p class="description"><?php esc_html_e( 'Choose a color for an attribute value to show it as a colored circle next to the value in the frontend variation table.', 'palaplast' ); ?></p>
+		<?php foreach ( $attributes as $attribute_key => $attribute_value ) :
+			$attribute_name = 0 === strpos( $attribute_key, 'attribute_' ) ? substr( $attribute_key, 10 ) : $attribute_key;
+			if ( '' === trim( (string) $attribute_value ) ) {
+				continue;
+			}
+
+			$selected_color = isset( $saved_colors[ $attribute_name ] ) ? sanitize_hex_color( (string) $saved_colors[ $attribute_name ] ) : '';
+			$label          = wc_attribute_label( $attribute_name );
+			?>
+			<label class="palaplast-variation-attribute-colors__row">
+				<span class="palaplast-variation-attribute-colors__label"><?php echo esc_html( $label ); ?></span>
+				<select name="palaplast_attribute_colors[<?php echo esc_attr( $loop ); ?>][<?php echo esc_attr( $attribute_name ); ?>]">
+					<?php foreach ( $color_options as $color_value => $color_label ) : ?>
+						<option value="<?php echo esc_attr( $color_value ); ?>" <?php selected( $selected_color, $color_value ); ?>><?php echo esc_html( $color_label ); ?></option>
+					<?php endforeach; ?>
+				</select>
+				<?php if ( $selected_color ) : ?>
+					<span class="palaplast-variation-attribute-colors__preview" style="background-color: <?php echo esc_attr( $selected_color ); ?>;"></span>
+				<?php endif; ?>
+			</label>
+		<?php endforeach; ?>
+	</div>
+	<?php
+}
+
+function palaplast_save_variation_attribute_color_fields( $variation_id, $loop ) {
+	$posted_colors = isset( $_POST['palaplast_attribute_colors'][ $loop ] ) && is_array( $_POST['palaplast_attribute_colors'][ $loop ] ) ? wp_unslash( $_POST['palaplast_attribute_colors'][ $loop ] ) : array();
+	$clean_colors  = array();
+
+	foreach ( $posted_colors as $attribute_name => $color ) {
+		$attribute_name = sanitize_title( (string) $attribute_name );
+		$color          = sanitize_hex_color( (string) $color );
+
+		if ( '' === $attribute_name || ! $color ) {
+			continue;
+		}
+
+		$clean_colors[ $attribute_name ] = $color;
+	}
+
+	if ( empty( $clean_colors ) ) {
+		delete_post_meta( $variation_id, '_palaplast_attribute_colors' );
+		return;
+	}
+
+	update_post_meta( $variation_id, '_palaplast_attribute_colors', $clean_colors );
 }
 
 function palaplast_render_variation_table_custom_rows_field() {

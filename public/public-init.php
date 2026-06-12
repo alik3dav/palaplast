@@ -165,7 +165,7 @@ function palaplast_render_matrix_table_for_product( $product_id, $return_html = 
 								$value_raw               = isset( $variation_attributes[ $variation_attribute_key ] ) ? $variation_attributes[ $variation_attribute_key ] : '';
 								$value                   = palaplast_get_attribute_value( $product, $attr_name, $value_raw );
 								?>
-								<td class="col-attr"><?php echo esc_html( $value ); ?></td>
+								<td class="col-attr"><?php echo wp_kses_post( palaplast_get_attribute_value_html( $variation_id, $attr_name, $value ) ); ?></td>
 							<?php endforeach; ?>
 						</tr>
 						<?php
@@ -360,6 +360,40 @@ function palaplast_get_variation_header_html( $label ) {
 		esc_html( $title ),
 		esc_html( $unit )
 	);
+}
+
+
+function palaplast_get_attribute_value_html( $variation_id, $attr_name, $value ) {
+	$value = (string) $value;
+	$color = palaplast_get_variation_attribute_color( $variation_id, $attr_name );
+
+	if ( ! $color || '—' === $value ) {
+		return esc_html( $value );
+	}
+
+	return sprintf(
+		'<span class="palaplast-attribute-color-value"><span class="palaplast-attribute-color-dot" style="background-color:%1$s;" aria-hidden="true"></span><span class="palaplast-attribute-color-text">%2$s</span></span>',
+		esc_attr( $color ),
+		esc_html( $value )
+	);
+}
+
+function palaplast_get_variation_attribute_color( $variation_id, $attr_name ) {
+	$variation_id = (int) $variation_id;
+	$attr_name    = sanitize_title( (string) $attr_name );
+
+	if ( ! $variation_id || '' === $attr_name ) {
+		return '';
+	}
+
+	$colors = get_post_meta( $variation_id, '_palaplast_attribute_colors', true );
+	if ( ! is_array( $colors ) || empty( $colors[ $attr_name ] ) ) {
+		return '';
+	}
+
+	$color = sanitize_hex_color( (string) $colors[ $attr_name ] );
+
+	return $color ? $color : '';
 }
 
 function palaplast_get_attribute_value( $product, $attr_name, $value_raw ) {
