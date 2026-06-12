@@ -27,13 +27,18 @@ function palaplast_enqueue_admin_assets( $hook_suffix ) {
 	$screen                = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
 	$is_certificate_editor = in_array( $hook_suffix, array( 'post.php', 'post-new.php' ), true ) && $screen && 'palaplast_cert' === $screen->post_type;
 	$is_product_editor     = in_array( $hook_suffix, array( 'post.php', 'post-new.php' ), true ) && $screen && 'product' === $screen->post_type;
-	$is_plugin_page        = in_array( $hook_suffix, array( 'woocommerce_page_palaplast-technical-sheets', 'woocommerce_page_palaplast-pricelists' ), true );
+	$is_plugin_page        = in_array( $hook_suffix, array( 'woocommerce_page_palaplast-technical-sheets', 'woocommerce_page_palaplast-pricelists', 'woocommerce_page_palaplast-variation-colors' ), true );
 
 	if ( ! $is_plugin_page && ! $is_certificate_editor && ! $is_product_editor ) {
 		return;
 	}
 
 	wp_enqueue_style( 'palaplast-admin', PALAPLAST_PLUGIN_URL . 'assets/css/palaplast-admin.css', array(), PALAPLAST_VERSION );
+
+	if ( 'woocommerce_page_palaplast-variation-colors' === $hook_suffix ) {
+		wp_enqueue_script( 'wp-util' );
+		return;
+	}
 
 	if ( $is_product_editor ) {
 		return;

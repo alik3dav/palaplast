@@ -51,6 +51,82 @@ function palaplast_get_technical_sheet_category_name_by_slug( $category_slug ) {
 	return '';
 }
 
+
+function palaplast_get_default_variation_colors() {
+	return array(
+		array(
+			'name' => __( 'Black', 'palaplast' ),
+			'hex'  => '#000000',
+		),
+		array(
+			'name' => __( 'White', 'palaplast' ),
+			'hex'  => '#ffffff',
+		),
+		array(
+			'name' => __( 'Gray', 'palaplast' ),
+			'hex'  => '#808080',
+		),
+		array(
+			'name' => __( 'Red', 'palaplast' ),
+			'hex'  => '#ff0000',
+		),
+		array(
+			'name' => __( 'Green', 'palaplast' ),
+			'hex'  => '#00a651',
+		),
+		array(
+			'name' => __( 'Blue', 'palaplast' ),
+			'hex'  => '#0057ff',
+		),
+		array(
+			'name' => __( 'Yellow', 'palaplast' ),
+			'hex'  => '#ffd400',
+		),
+		array(
+			'name' => __( 'Orange', 'palaplast' ),
+			'hex'  => '#ff8a00',
+		),
+		array(
+			'name' => __( 'Purple', 'palaplast' ),
+			'hex'  => '#7b3fe4',
+		),
+		array(
+			'name' => __( 'Brown', 'palaplast' ),
+			'hex'  => '#8b5a2b',
+		),
+	);
+}
+
+function palaplast_get_variation_colors() {
+	$stored_colors = get_option( 'palaplast_variation_colors', false );
+	$colors        = false === $stored_colors ? palaplast_get_default_variation_colors() : $stored_colors;
+
+	if ( ! is_array( $colors ) ) {
+		return array();
+	}
+
+	$clean_colors = array();
+	foreach ( $colors as $color ) {
+		if ( ! is_array( $color ) ) {
+			continue;
+		}
+
+		$name = isset( $color['name'] ) ? sanitize_text_field( (string) $color['name'] ) : '';
+		$hex  = isset( $color['hex'] ) ? sanitize_hex_color( (string) $color['hex'] ) : '';
+
+		if ( '' === $name || ! $hex ) {
+			continue;
+		}
+
+		$clean_colors[] = array(
+			'name' => $name,
+			'hex'  => strtolower( $hex ),
+		);
+	}
+
+	return $clean_colors;
+}
+
 function palaplast_get_pricelists() {
 	$pricelists = get_option( 'palaplast_pricelists', array() );
 

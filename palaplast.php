@@ -50,6 +50,7 @@ function palaplast_init() {
 	if ( is_admin() ) {
 		require_once PALAPLAST_PLUGIN_DIR . 'admin/technical-sheets-page.php';
 		require_once PALAPLAST_PLUGIN_DIR . 'admin/pricelists-page.php';
+		require_once PALAPLAST_PLUGIN_DIR . 'admin/variation-colors-page.php';
 		require_once PALAPLAST_PLUGIN_DIR . 'admin/admin-init.php';
 		return;
 	}

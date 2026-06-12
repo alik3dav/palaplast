@@ -5,12 +5,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 add_action( 'admin_menu', 'palaplast_register_technical_sheets_menu' );
 add_action( 'admin_menu', 'palaplast_register_pricelists_menu' );
+add_action( 'admin_menu', 'palaplast_register_variation_colors_menu' );
 add_action( 'admin_menu', 'palaplast_register_certificates_menu' );
 add_action( 'admin_enqueue_scripts', 'palaplast_enqueue_admin_assets' );
 add_action( 'admin_post_palaplast_save_sheet', 'palaplast_handle_save_sheet' );
 add_action( 'admin_post_palaplast_delete_sheet', 'palaplast_handle_delete_sheet' );
 add_action( 'admin_post_palaplast_save_pricelist', 'palaplast_handle_save_pricelist' );
 add_action( 'admin_post_palaplast_delete_pricelist', 'palaplast_handle_delete_pricelist' );
+add_action( 'admin_post_palaplast_save_variation_colors', 'palaplast_handle_save_variation_colors' );
 add_action( 'product_cat_add_form_fields', 'palaplast_render_category_sheet_add_field' );
 add_action( 'product_cat_edit_form_fields', 'palaplast_render_category_sheet_edit_field' );
 add_action( 'product_cat_add_form_fields', 'palaplast_render_category_pricelist_add_field' );
@@ -33,6 +35,10 @@ function palaplast_register_technical_sheets_menu() {
 
 function palaplast_register_pricelists_menu() {
 	add_submenu_page( 'woocommerce', __( 'Pricelists', 'palaplast' ), __( 'Pricelists', 'palaplast' ), 'manage_woocommerce', 'palaplast-pricelists', 'palaplast_render_pricelists_page' );
+}
+
+function palaplast_register_variation_colors_menu() {
+	add_submenu_page( 'woocommerce', __( 'Variation Colors', 'palaplast' ), __( 'Variation Colors', 'palaplast' ), 'manage_woocommerce', 'palaplast-variation-colors', 'palaplast_render_variation_colors_page' );
 }
 
 function palaplast_register_certificates_menu() {
@@ -117,19 +123,15 @@ function palaplast_save_certificate_pdf_metabox( $post_id ) {
 
 
 function palaplast_get_variation_attribute_color_options() {
-	return array(
-		''        => __( '— No color —', 'palaplast' ),
-		'#000000' => __( 'Black', 'palaplast' ),
-		'#ffffff' => __( 'White', 'palaplast' ),
-		'#808080' => __( 'Gray', 'palaplast' ),
-		'#ff0000' => __( 'Red', 'palaplast' ),
-		'#00a651' => __( 'Green', 'palaplast' ),
-		'#0057ff' => __( 'Blue', 'palaplast' ),
-		'#ffd400' => __( 'Yellow', 'palaplast' ),
-		'#ff8a00' => __( 'Orange', 'palaplast' ),
-		'#7b3fe4' => __( 'Purple', 'palaplast' ),
-		'#8b5a2b' => __( 'Brown', 'palaplast' ),
+	$options = array(
+		'' => __( '— No color —', 'palaplast' ),
 	);
+
+	foreach ( palaplast_get_variation_colors() as $color ) {
+		$options[ $color['hex'] ] = $color['name'];
+	}
+
+	return $options;
 }
 
 function palaplast_render_variation_attribute_color_fields( $loop, $variation_data, $variation ) {
@@ -162,6 +164,9 @@ function palaplast_render_variation_attribute_color_fields( $loop, $variation_da
 
 			$selected_color = isset( $saved_colors[ $attribute_name ] ) ? sanitize_hex_color( (string) $saved_colors[ $attribute_name ] ) : '';
 			$label          = wc_attribute_label( $attribute_name );
+			if ( $selected_color && ! isset( $color_options[ $selected_color ] ) ) {
+				$color_options[ $selected_color ] = sprintf( __( 'Saved color (%s)', 'palaplast' ), $selected_color );
+			}
 			?>
 			<label class="palaplast-variation-attribute-colors__row">
 				<span class="palaplast-variation-attribute-colors__label"><?php echo esc_html( $label ); ?></span>
