@@ -12,7 +12,7 @@ A lightweight WooCommerce plugin that renders a clean variation matrix (SKU + at
 
 == Description ==
 
-Palaplast displays a compact variation matrix for WooCommerce variable products and keeps the output readable on all screen sizes.
+palaplast displays a compact variation matrix for WooCommerce variable products and keeps the output readable on all screen sizes.
 
 == Installation ==
 
