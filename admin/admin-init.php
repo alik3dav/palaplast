@@ -165,6 +165,7 @@ function palaplast_render_variation_attribute_color_fields( $loop, $variation_da
 			$selected_color = isset( $saved_colors[ $attribute_name ] ) ? sanitize_hex_color( (string) $saved_colors[ $attribute_name ] ) : '';
 			$label          = wc_attribute_label( $attribute_name );
 			if ( $selected_color && ! isset( $color_options[ $selected_color ] ) ) {
+				/* translators: %s: the hex color code */
 				$color_options[ $selected_color ] = sprintf( __( 'Saved color (%s)', 'palaplast' ), $selected_color );
 			}
 			?>
