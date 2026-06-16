@@ -1,4 +1,4 @@
-=== Palaplast ===
+=== palaplast ===
 Contributors: palaplast
 Tags: woocommerce, variations, table, matrix, products
 Requires at least: 5.8
