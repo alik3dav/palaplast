@@ -3,6 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+add_action( 'admin_menu', 'palaplast_register_dashboard_menu' );
 add_action( 'admin_menu', 'palaplast_register_technical_sheets_menu' );
 add_action( 'admin_menu', 'palaplast_register_pricelists_menu' );
 add_action( 'admin_menu', 'palaplast_register_variation_colors_menu' );
@@ -28,6 +29,10 @@ add_action( 'woocommerce_save_product_variation', 'palaplast_save_variation_attr
 add_action( 'admin_notices', 'palaplast_render_certificates_shortcode_notice' );
 add_action( 'add_meta_boxes', 'palaplast_register_certificate_pdf_metabox' );
 add_action( 'save_post_palaplast_cert', 'palaplast_save_certificate_pdf_metabox' );
+
+function palaplast_register_dashboard_menu() {
+	add_submenu_page( 'woocommerce', __( 'Palaplast Dashboard', 'palaplast' ), __( 'Palaplast', 'palaplast' ), 'manage_woocommerce', 'palaplast-dashboard', 'palaplast_render_dashboard_page' );
+}
 
 function palaplast_register_technical_sheets_menu() {
 	add_submenu_page( 'woocommerce', __( 'Technical Sheets', 'palaplast' ), __( 'Technical Sheets', 'palaplast' ), 'manage_woocommerce', 'palaplast-technical-sheets', 'palaplast_render_technical_sheets_page' );

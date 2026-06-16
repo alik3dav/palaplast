@@ -48,6 +48,7 @@ function palaplast_init() {
 	require_once PALAPLAST_PLUGIN_DIR . 'includes/custom-post-types.php';
 
 	if ( is_admin() ) {
+		require_once PALAPLAST_PLUGIN_DIR . 'admin/dashboard-page.php';
 		require_once PALAPLAST_PLUGIN_DIR . 'admin/technical-sheets-page.php';
 		require_once PALAPLAST_PLUGIN_DIR . 'admin/pricelists-page.php';
 		require_once PALAPLAST_PLUGIN_DIR . 'admin/variation-colors-page.php';
