@@ -99,3 +99,43 @@
 #variable_product_options .woocommerce_variation select[name^="variable_shipping_class"] {
 	display: none !important;
 }
+
+.palaplast-dashboard-intro {
+	max-width: 980px;
+	font-size: 15px;
+}
+
+.palaplast-dashboard-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 20px;
+	max-width: 980px;
+}
+
+.palaplast-dashboard-card {
+	box-sizing: border-box;
+	max-width: none;
+}
+
+.palaplast-dashboard-steps {
+	margin-left: 20px;
+}
+
+.palaplast-dashboard-steps li,
+.palaplast-dashboard-links li {
+	margin-bottom: 10px;
+}
+
+.palaplast-dashboard-links span {
+	display: block;
+	margin-top: 3px;
+	color: #50575e;
+}
+
+.palaplast-dashboard-shortcodes-card {
+	max-width: 980px;
+}
+
+.palaplast-shortcodes-table code {
+	white-space: nowrap;
+}
