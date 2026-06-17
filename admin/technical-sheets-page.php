@@ -70,6 +70,28 @@ function palaplast_render_technical_sheets_page() {
 						</td>
 					</tr>
 					<tr>
+						<th scope="row"><label for="palaplast_sheet_brand_name"><?php esc_html_e( 'Brand', 'palaplast' ); ?></label></th>
+						<td>
+							<input type="text" class="regular-text" id="palaplast_sheet_brand_name" name="sheet_brand_name" value="<?php echo isset( $sheet['brand_name'] ) ? esc_attr( $sheet['brand_name'] ) : ''; ?>" placeholder="<?php echo esc_attr__( 'Brand name', 'palaplast' ); ?>" />
+							<?php $brand_logo_id = isset( $sheet['brand_logo_id'] ) ? (int) $sheet['brand_logo_id'] : 0; ?>
+							<input type="hidden" id="palaplast_brand_logo_id" name="brand_logo_id" value="<?php echo esc_attr( $brand_logo_id ); ?>" />
+							<p>
+								<button class="button palaplast-select-brand-logo"><?php esc_html_e( 'Select Brand Logo', 'palaplast' ); ?></button>
+								<button class="button palaplast-remove-brand-logo"><?php esc_html_e( 'Remove Logo', 'palaplast' ); ?></button>
+							</p>
+							<p class="description palaplast-selected-brand-logo">
+								<?php
+								if ( $brand_logo_id ) {
+									echo esc_html( basename( (string) get_attached_file( $brand_logo_id ) ) );
+								} else {
+									esc_html_e( 'No logo selected.', 'palaplast' );
+								}
+								?>
+							</p>
+							<p class="description"><?php esc_html_e( 'Optional: show this brand logo on the frontend technical sheet card.', 'palaplast' ); ?></p>
+						</td>
+					</tr>
+					<tr>
 						<th scope="row"><label for="palaplast_sheet_category"><?php esc_html_e( 'Technical Sheet Category', 'palaplast' ); ?></label></th>
 						<td>
 							<select id="palaplast_sheet_category" name="sheet_category">
@@ -95,10 +117,10 @@ function palaplast_render_technical_sheets_page() {
 
 		<h2 class="palaplast-admin-list-title"><?php esc_html_e( 'All Technical Sheets', 'palaplast' ); ?></h2>
 		<table class="widefat striped palaplast-admin-table">
-			<thead><tr><th><?php esc_html_e( 'Name', 'palaplast' ); ?></th><th><?php esc_html_e( 'Sheet Category', 'palaplast' ); ?></th><th><?php esc_html_e( 'PDF File', 'palaplast' ); ?></th><th><?php esc_html_e( 'Date', 'palaplast' ); ?></th><th><?php esc_html_e( 'Actions', 'palaplast' ); ?></th></tr></thead>
+			<thead><tr><th><?php esc_html_e( 'Name', 'palaplast' ); ?></th><th><?php esc_html_e( 'Brand', 'palaplast' ); ?></th><th><?php esc_html_e( 'Sheet Category', 'palaplast' ); ?></th><th><?php esc_html_e( 'PDF File', 'palaplast' ); ?></th><th><?php esc_html_e( 'Date', 'palaplast' ); ?></th><th><?php esc_html_e( 'Actions', 'palaplast' ); ?></th></tr></thead>
 			<tbody>
 				<?php if ( empty( $sheets ) ) : ?>
-					<tr><td colspan="5"><?php esc_html_e( 'No technical sheets found.', 'palaplast' ); ?></td></tr>
+					<tr><td colspan="6"><?php esc_html_e( 'No technical sheets found.', 'palaplast' ); ?></td></tr>
 				<?php else : foreach ( $sheets as $sheet_id => $sheet_data ) :
 					$file_url = ! empty( $sheet_data['attachment_id'] ) ? wp_get_attachment_url( (int) $sheet_data['attachment_id'] ) : '';
 					$file_name = ! empty( $sheet_data['attachment_id'] ) ? basename( (string) get_attached_file( (int) $sheet_data['attachment_id'] ) ) : '';
@@ -111,6 +133,7 @@ function palaplast_render_technical_sheets_page() {
 					?>
 					<tr>
 						<td><?php echo esc_html( isset( $sheet_data['name'] ) ? $sheet_data['name'] : '' ); ?></td>
+						<td><?php echo ! empty( $sheet_data['brand_name'] ) ? esc_html( $sheet_data['brand_name'] ) : '—'; ?></td>
 						<td><?php echo ! empty( $category_names ) ? esc_html( implode( ', ', $category_names ) ) : '—'; ?></td>
 						<td><?php if ( $file_url ) : ?><a href="<?php echo esc_url( $file_url ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $file_name ? $file_name : $file_url ); ?></a><?php else : esc_html_e( 'No file', 'palaplast' ); endif; ?></td>
 						<td><?php echo ! empty( $sheet_data['created_at'] ) ? esc_html( date_i18n( get_option( 'date_format' ), strtotime( $sheet_data['created_at'] ) ) ) : ''; ?></td>
@@ -132,6 +155,8 @@ function palaplast_handle_save_sheet() {
 	$sheet_id      = isset( $_POST['sheet_id'] ) ? absint( wp_unslash( $_POST['sheet_id'] ) ) : 0;
 	$sheet_name    = isset( $_POST['sheet_name'] ) ? sanitize_text_field( wp_unslash( $_POST['sheet_name'] ) ) : '';
 	$attachment_id = isset( $_POST['attachment_id'] ) ? absint( wp_unslash( $_POST['attachment_id'] ) ) : 0;
+	$brand_name    = isset( $_POST['sheet_brand_name'] ) ? sanitize_text_field( wp_unslash( $_POST['sheet_brand_name'] ) ) : '';
+	$brand_logo_id = isset( $_POST['brand_logo_id'] ) ? absint( wp_unslash( $_POST['brand_logo_id'] ) ) : 0;
 	$selected_category_slug = isset( $_POST['sheet_category'] ) ? sanitize_title( wp_unslash( $_POST['sheet_category'] ) ) : '';
 	$new_category_name      = isset( $_POST['sheet_category_new'] ) ? sanitize_text_field( wp_unslash( $_POST['sheet_category_new'] ) ) : '';
 	$new_category_slug      = sanitize_title( $new_category_name );
@@ -150,6 +175,8 @@ function palaplast_handle_save_sheet() {
 		$sheets[ $sheet_id ]['attachment_id'] = $attachment_id;
 		$sheets[ $sheet_id ]['category']      = $sheet_category_slug;
 		$sheets[ $sheet_id ]['category_name'] = $sheet_category_name;
+		$sheets[ $sheet_id ]['brand_name']    = $brand_name;
+		$sheets[ $sheet_id ]['brand_logo_id'] = $brand_logo_id;
 	} else {
 		$sheet_id            = time() + wp_rand( 1, 999 );
 		$sheets[ $sheet_id ] = array(
@@ -157,6 +184,8 @@ function palaplast_handle_save_sheet() {
 			'attachment_id' => $attachment_id,
 			'category'      => $sheet_category_slug,
 			'category_name' => $sheet_category_name,
+			'brand_name'    => $brand_name,
+			'brand_logo_id' => $brand_logo_id,
 			'created_at'    => current_time( 'mysql' ),
 		);
 	}
