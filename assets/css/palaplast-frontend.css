@@ -223,39 +223,97 @@
    
 }
 
-.palaplast-technical-sheet-button.button,
+
+
+/* PRODUCT BUTTONS START */
+
+/* PRICELIST BUTTON - PRIMARY */
 .palaplast-pricelist-button.button {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    gap: 7px;
+
+    width: 180px;
+    min-height: 42px;
+    padding: 11px 16px;
+
     border-radius: 6px;
+    border: 1px solid #c91517;
+    background: #d71920;
 
-    background: linear-gradient(
-        135deg,
-        rgba(255,255,255,0.9) 0%,
-        rgba(240,244,248,0.9) 100%
-    );
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: .25px;
 
-    border: 1px solid rgba(0,0,0,0.06);
-    backdrop-filter: blur(4px);
-    color: #1f2937;
-    transition: all 0.25s ease;
+    box-shadow: 0 6px 14px rgba(215, 25, 32, 0.18);
+    transition: all .22s ease;
 }
 
-/* Hover */
-.palaplast-technical-sheet-button.button:hover,
 .palaplast-pricelist-button.button:hover {
+    background: #bf1117;
+    border-color: #bf1117;
+    color: #ffffff;
     transform: translateY(-1px);
-    filter: brightness(1.05);
+    box-shadow: 0 8px 18px rgba(215, 25, 32, 0.24);
 }
-.palaplast-pricelist-button.button::before ,
-.palaplast-technical-sheet-button.button::before {
-    content: "\f381"; /* file-pdf */
+
+.palaplast-pricelist-button.button::before {
+    content: "\f1c1"; /* PDF */
     font-family: "Font Awesome 5 Free";
-    font-weight: 900; /* IMPORTANT (solid icons) */
+    font-weight: 900;
     font-size: 14px;
-    opacity: .7;
+    line-height: 1;
 }
+
+
+/* TECHNICAL SHEET BUTTON - SECONDARY */
+.palaplast-technical-sheet-button.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    width: 180px;
+    min-height: 42px;
+    padding: 11px 16px;
+
+    border-radius: 6px;
+    border: 1px solid #d7dee8;
+    background: #ffffff;
+
+    color: #1f2937;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: .25px;
+
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
+    transition: all .22s ease;
+}
+
+.palaplast-technical-sheet-button.button:hover {
+    background: #f8fafc;
+    border-color: #c6d0dc;
+    color: #111827;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+}
+
+.palaplast-technical-sheet-button.button::before {
+    content: "\f15c"; /* File */
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 14px;
+    line-height: 1;
+    opacity: .85;
+}
+
+/* PRODUCT BUTTONS END */
 
 
 .palaplast-pdf-list {
