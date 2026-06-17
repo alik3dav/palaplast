@@ -52,6 +52,70 @@ function palaplast_get_technical_sheet_category_name_by_slug( $category_slug ) {
 }
 
 
+function palaplast_get_product_brand_taxonomy() {
+	$brand_taxonomies = array(
+		'product_brand',
+		'product_brands',
+		'pwb-brand',
+		'yith_product_brand',
+		'pa_brand',
+	);
+
+	foreach ( $brand_taxonomies as $taxonomy ) {
+		if ( taxonomy_exists( $taxonomy ) ) {
+			return $taxonomy;
+		}
+	}
+
+	return '';
+}
+
+function palaplast_get_product_brand_terms() {
+	$taxonomy = palaplast_get_product_brand_taxonomy();
+
+	if ( '' === $taxonomy ) {
+		return array();
+	}
+
+	$terms = get_terms(
+		array(
+			'taxonomy'   => $taxonomy,
+			'hide_empty' => false,
+		)
+	);
+
+	if ( is_wp_error( $terms ) || empty( $terms ) ) {
+		return array();
+	}
+
+	return $terms;
+}
+
+function palaplast_get_product_brand_logo_id( $term_id ) {
+	$term_id = (int) $term_id;
+
+	if ( ! $term_id ) {
+		return 0;
+	}
+
+	$logo_meta_keys = array(
+		'thumbnail_id',
+		'brand_thumbnail_id',
+		'pwb_brand_image',
+		'yith_product_brand_thumbnail_id',
+		'logo_id',
+	);
+
+	foreach ( $logo_meta_keys as $meta_key ) {
+		$logo_id = absint( get_term_meta( $term_id, $meta_key, true ) );
+		if ( $logo_id ) {
+			return $logo_id;
+		}
+	}
+
+	return 0;
+}
+
 function palaplast_get_default_variation_colors() {
 	return array(
 		array(

@@ -338,13 +338,31 @@ function palaplast_render_pdf_list_shortcode( $items, $atts, $wrapper_class, $ti
 			continue;
 		}
 
+		$brand_name     = isset( $item['brand_name'] ) ? (string) $item['brand_name'] : '';
 		$brand_logo_id  = isset( $item['brand_logo_id'] ) ? (int) $item['brand_logo_id'] : 0;
+		$brand_term_id  = isset( $item['brand_term_id'] ) ? (int) $item['brand_term_id'] : 0;
+
+		if ( $brand_term_id && function_exists( 'palaplast_get_product_brand_taxonomy' ) ) {
+			$brand_taxonomy = palaplast_get_product_brand_taxonomy();
+			$brand_term     = '' !== $brand_taxonomy ? get_term( $brand_term_id, $brand_taxonomy ) : null;
+			if ( $brand_term instanceof WP_Term ) {
+				$brand_name = $brand_term->name;
+			}
+
+			if ( function_exists( 'palaplast_get_product_brand_logo_id' ) ) {
+				$current_brand_logo_id = palaplast_get_product_brand_logo_id( $brand_term_id );
+				if ( $current_brand_logo_id ) {
+					$brand_logo_id = $current_brand_logo_id;
+				}
+			}
+		}
+
 		$brand_logo_url = $brand_logo_id ? wp_get_attachment_image_url( $brand_logo_id, 'medium' ) : '';
 
 		$valid_items[] = array(
 			'name'           => $item_name,
 			'file_url'       => $file_url,
-			'brand_name'     => isset( $item['brand_name'] ) ? (string) $item['brand_name'] : '',
+			'brand_name'     => $brand_name,
 			'brand_logo_url' => $brand_logo_url ? (string) $brand_logo_url : '',
 		);
 	}
