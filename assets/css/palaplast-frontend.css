@@ -330,6 +330,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 6px 8px;
+    margin-bottom: 0px;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     background: #fff;
@@ -499,6 +500,7 @@
     grid-template-columns: repeat(auto-fit, minmax(300px, 300px));
     justify-content: start;
     gap: 6px;
+    
 }
 
 .palaplast-technical-sheets-list .palaplast-technical-sheet-card {
