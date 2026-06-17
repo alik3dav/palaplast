@@ -338,9 +338,14 @@ function palaplast_render_pdf_list_shortcode( $items, $atts, $wrapper_class, $ti
 			continue;
 		}
 
+		$brand_logo_id  = isset( $item['brand_logo_id'] ) ? (int) $item['brand_logo_id'] : 0;
+		$brand_logo_url = $brand_logo_id ? wp_get_attachment_image_url( $brand_logo_id, 'medium' ) : '';
+
 		$valid_items[] = array(
-			'name'     => $item_name,
-			'file_url' => $file_url,
+			'name'           => $item_name,
+			'file_url'       => $file_url,
+			'brand_name'     => isset( $item['brand_name'] ) ? (string) $item['brand_name'] : '',
+			'brand_logo_url' => $brand_logo_url ? (string) $brand_logo_url : '',
 		);
 	}
 
@@ -354,12 +359,33 @@ function palaplast_render_pdf_list_shortcode( $items, $atts, $wrapper_class, $ti
 		<?php if ( $show_title && '' !== $title ) : ?>
 			<h3 class="<?php echo esc_attr( $title_class ); ?>"><?php echo esc_html( $title ); ?></h3>
 		<?php endif; ?>
-		<ul class="palaplast-pdf-list" role="list">
+		<?php $is_technical_sheet_list = 'palaplast-technical-sheets-list' === $wrapper_class; ?>
+		<ul class="palaplast-pdf-list<?php echo $is_technical_sheet_list ? ' palaplast-technical-sheet-cards' : ''; ?>" role="list">
 			<?php foreach ( $valid_items as $item ) : ?>
-				<li class="palaplast-pdf-list-item">
-					<div class="palaplast-pdf-list-item__title"><?php echo esc_html( $item['name'] ); ?></div>
-					<a class="palaplast-pdf-list-item__action" href="<?php echo esc_url( $item['file_url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open PDF', 'palaplast' ); ?></a>
-				</li>
+				<?php if ( $is_technical_sheet_list ) : ?>
+					<li class="palaplast-pdf-list-item palaplast-technical-sheet-card">
+						<div class="palaplast-technical-sheet-card__content">
+							<div class="palaplast-technical-sheet-card__brand">
+								<?php if ( ! empty( $item['brand_logo_url'] ) ) : ?>
+									<img class="palaplast-technical-sheet-card__brand-logo" src="<?php echo esc_url( $item['brand_logo_url'] ); ?>" alt="<?php echo esc_attr( $item['brand_name'] ? $item['brand_name'] : $item['name'] ); ?>" loading="lazy" />
+								<?php elseif ( ! empty( $item['brand_name'] ) ) : ?>
+									<span class="palaplast-technical-sheet-card__brand-name"><?php echo esc_html( $item['brand_name'] ); ?></span>
+								<?php endif; ?>
+							</div>
+							<div class="palaplast-pdf-list-item__title"><?php echo esc_html( $item['name'] ); ?></div>
+							<p class="palaplast-technical-sheet-card__description"><?php echo esc_html( sprintf( __( 'Technical specifications and data for %s.', 'palaplast' ), $item['name'] ) ); ?></p>
+							<a class="palaplast-pdf-list-item__action" href="<?php echo esc_url( $item['file_url'] ); ?>" target="_blank" rel="noopener noreferrer">
+								<span class="palaplast-technical-sheet-card__action-icon" aria-hidden="true">▯</span><?php esc_html_e( 'Open PDF', 'palaplast' ); ?>
+							</a>
+						</div>
+						<div class="palaplast-technical-sheet-card__visual" aria-hidden="true"><span class="palaplast-technical-sheet-card__pdf-label">PDF</span><span class="palaplast-technical-sheet-card__paper"></span></div>
+					</li>
+				<?php else : ?>
+					<li class="palaplast-pdf-list-item">
+						<div class="palaplast-pdf-list-item__title"><?php echo esc_html( $item['name'] ); ?></div>
+						<a class="palaplast-pdf-list-item__action" href="<?php echo esc_url( $item['file_url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open PDF', 'palaplast' ); ?></a>
+					</li>
+				<?php endif; ?>
 			<?php endforeach; ?>
 		</ul>
 	</div>
