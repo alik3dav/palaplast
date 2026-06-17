@@ -54,12 +54,14 @@
 }
 
 .palaplast-table th {
-    font-size: 12px;
-    font-weight: 600;
-    color: #222935;
-    background: #eeeeee;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fcfcfc;
+    background: #b61111;
     line-height: 1.15;
-    letter-spacing: .008em
+    letter-spacing: .008em;
+    padding-top: 10px;
+    pading-bottom: 10px;
 }
 
 .palaplast-table th .spec-title {
@@ -68,15 +70,15 @@
 
 .palaplast-table th .spec-unit {
     display: block;
-    font-size: 9px;
-    opacity: .85;
-    font-weight: 400;
+    font-size: 11px;
+    opacity: .75;
+    font-weight: 300;
     line-height: 1.05;
     margin-top: 1px
 }
 
 .palaplast-table tbody tr {
-    transition: background-color .14s ease
+    transition: background-color .4s ease
 }
 
 .palaplast-table tbody tr:hover td {
@@ -119,7 +121,7 @@
     justify-content: flex-start;
     gap: 8px;
     max-width: 100%;
-    height: 35px
+    height: 40px
 }
 
 .palaplast-table .palaplast-code-value {
@@ -135,16 +137,16 @@
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    height: 16px;
+    height: 24px;
     margin-left: 1px;
     padding: 0;
     border: 0;
-    border-radius: 2px;
+    border-radius: 0px;
     background: transparent;
     color: inherit;
     line-height: 1;
     cursor: pointer;
-    transition: transform .08s ease, opacity .14s ease
+    transition: transform 0.08s ease, opacity .14s ease
 }
 
 .palaplast-table .palaplast-copy-code:hover,
@@ -176,15 +178,15 @@
 .palaplast-table .palaplast-copy-code.is-copied::after {
     content: "Copied";
     position: absolute;
-    bottom: calc(65% + 4px);
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 4px 6px;
-    border-radius: 4px;
-    background: #11182786;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 500;
+    left: calc(100% + 8px); /* right side of button */
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 6px 8px;
+    border-radius: 0px;
+    background: #1118271c;
+    color: #1a1a1a;
+    font-size: 11px;
+    font-weight: 400;
     line-height: 1;
     white-space: nowrap;
     letter-spacing: .01em;
