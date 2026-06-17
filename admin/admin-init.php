@@ -11,6 +11,7 @@ add_action( 'admin_menu', 'palaplast_register_certificates_menu' );
 add_action( 'admin_enqueue_scripts', 'palaplast_enqueue_admin_assets' );
 add_action( 'admin_post_palaplast_save_sheet', 'palaplast_handle_save_sheet' );
 add_action( 'admin_post_palaplast_delete_sheet', 'palaplast_handle_delete_sheet' );
+add_action( 'admin_post_palaplast_save_sheet_order', 'palaplast_handle_save_sheet_order' );
 add_action( 'admin_post_palaplast_save_pricelist', 'palaplast_handle_save_pricelist' );
 add_action( 'admin_post_palaplast_delete_pricelist', 'palaplast_handle_delete_pricelist' );
 add_action( 'admin_post_palaplast_save_variation_colors', 'palaplast_handle_save_variation_colors' );

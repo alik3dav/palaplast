@@ -40,6 +40,10 @@ function palaplast_render_technical_sheets_page() {
 			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Technical Sheet deleted.', 'palaplast' ); ?></p></div>
 		<?php endif; ?>
 
+		<?php if ( filter_input( INPUT_GET, 'sheet_order_updated', FILTER_SANITIZE_NUMBER_INT ) ) : ?>
+			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Technical Sheet order saved.', 'palaplast' ); ?></p></div>
+		<?php endif; ?>
+
 		<div class="card palaplast-admin-card">
 			<h2 class="palaplast-admin-card-title"><?php echo $edit_id ? esc_html__( 'Edit Technical Sheet', 'palaplast' ) : esc_html__( 'Add Technical Sheet', 'palaplast' ); ?></h2>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -112,34 +116,103 @@ function palaplast_render_technical_sheets_page() {
 		</div>
 
 		<h2 class="palaplast-admin-list-title"><?php esc_html_e( 'All Technical Sheets', 'palaplast' ); ?></h2>
-		<table class="widefat striped palaplast-admin-table">
-			<thead><tr><th><?php esc_html_e( 'Name', 'palaplast' ); ?></th><th><?php esc_html_e( 'Brand', 'palaplast' ); ?></th><th><?php esc_html_e( 'Sheet Category', 'palaplast' ); ?></th><th><?php esc_html_e( 'PDF File', 'palaplast' ); ?></th><th><?php esc_html_e( 'Date', 'palaplast' ); ?></th><th><?php esc_html_e( 'Actions', 'palaplast' ); ?></th></tr></thead>
-			<tbody>
-				<?php if ( empty( $sheets ) ) : ?>
-					<tr><td colspan="6"><?php esc_html_e( 'No technical sheets found.', 'palaplast' ); ?></td></tr>
-				<?php else : foreach ( $sheets as $sheet_id => $sheet_data ) :
-					$file_url = ! empty( $sheet_data['attachment_id'] ) ? wp_get_attachment_url( (int) $sheet_data['attachment_id'] ) : '';
-					$file_name = ! empty( $sheet_data['attachment_id'] ) ? basename( (string) get_attached_file( (int) $sheet_data['attachment_id'] ) ) : '';
-					$category_names = array();
-					if ( ! empty( $sheet_data['category_name'] ) ) {
-						$category_names[] = (string) $sheet_data['category_name'];
-					}
-					$edit_url = add_query_arg( array( 'page' => 'palaplast-technical-sheets', 'edit_sheet' => $sheet_id ), admin_url( 'admin.php' ) );
-					$delete_url = wp_nonce_url( add_query_arg( array( 'action' => 'palaplast_delete_sheet', 'sheet_id' => $sheet_id ), admin_url( 'admin-post.php' ) ), 'palaplast_delete_sheet_' . $sheet_id );
-					?>
-					<tr>
-						<td><?php echo esc_html( isset( $sheet_data['name'] ) ? $sheet_data['name'] : '' ); ?></td>
-						<td><?php echo ! empty( $sheet_data['brand_name'] ) ? esc_html( $sheet_data['brand_name'] ) : '—'; ?></td>
-						<td><?php echo ! empty( $category_names ) ? esc_html( implode( ', ', $category_names ) ) : '—'; ?></td>
-						<td><?php if ( $file_url ) : ?><a href="<?php echo esc_url( $file_url ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $file_name ? $file_name : $file_url ); ?></a><?php else : esc_html_e( 'No file', 'palaplast' ); endif; ?></td>
-						<td><?php echo ! empty( $sheet_data['created_at'] ) ? esc_html( date_i18n( get_option( 'date_format' ), strtotime( $sheet_data['created_at'] ) ) ) : ''; ?></td>
-						<td><a class="button button-small" href="<?php echo esc_url( $edit_url ); ?>"><?php esc_html_e( 'Edit', 'palaplast' ); ?></a> <a class="button button-small" href="<?php echo esc_url( $delete_url ); ?>" onclick="return confirm('<?php echo esc_js( __( 'Delete this technical sheet?', 'palaplast' ) ); ?>');"><?php esc_html_e( 'Delete', 'palaplast' ); ?></a></td>
-					</tr>
-				<?php endforeach; endif; ?>
-			</tbody>
-		</table>
+		<p class="description palaplast-admin-list-description"><?php esc_html_e( 'Drag technical sheets within each category to set the frontend display order, then click Save Order.', 'palaplast' ); ?></p>
+		<?php $sheets_by_category = palaplast_group_technical_sheets_by_category( $sheets ); ?>
+		<?php if ( empty( $sheets_by_category ) ) : ?>
+			<table class="widefat striped palaplast-admin-table">
+				<tbody><tr><td><?php esc_html_e( 'No technical sheets found.', 'palaplast' ); ?></td></tr></tbody>
+			</table>
+		<?php else : ?>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="palaplast-sheet-order-form">
+				<?php wp_nonce_field( 'palaplast_save_sheet_order' ); ?>
+				<input type="hidden" name="action" value="palaplast_save_sheet_order" />
+				<?php foreach ( $sheets_by_category as $category_key => $category_group ) : ?>
+					<div class="palaplast-sheet-category-sort-group">
+						<h3 class="palaplast-sheet-category-sort-title"><?php echo esc_html( $category_group['name'] ); ?></h3>
+						<table class="widefat striped palaplast-admin-table palaplast-sortable-sheets-table">
+							<thead><tr><th class="palaplast-sort-handle-column"><?php esc_html_e( 'Sort', 'palaplast' ); ?></th><th><?php esc_html_e( 'Name', 'palaplast' ); ?></th><th><?php esc_html_e( 'Brand', 'palaplast' ); ?></th><th><?php esc_html_e( 'PDF File', 'palaplast' ); ?></th><th><?php esc_html_e( 'Date', 'palaplast' ); ?></th><th><?php esc_html_e( 'Actions', 'palaplast' ); ?></th></tr></thead>
+							<tbody class="palaplast-sortable-sheets" data-category="<?php echo esc_attr( $category_key ); ?>">
+								<?php foreach ( $category_group['sheets'] as $sheet_id => $sheet_data ) :
+									$file_url  = ! empty( $sheet_data['attachment_id'] ) ? wp_get_attachment_url( (int) $sheet_data['attachment_id'] ) : '';
+									$file_name = ! empty( $sheet_data['attachment_id'] ) ? basename( (string) get_attached_file( (int) $sheet_data['attachment_id'] ) ) : '';
+									$edit_url  = add_query_arg( array( 'page' => 'palaplast-technical-sheets', 'edit_sheet' => $sheet_id ), admin_url( 'admin.php' ) );
+									$delete_url = wp_nonce_url( add_query_arg( array( 'action' => 'palaplast_delete_sheet', 'sheet_id' => $sheet_id ), admin_url( 'admin-post.php' ) ), 'palaplast_delete_sheet_' . $sheet_id );
+									?>
+									<tr class="palaplast-sortable-sheet-row" data-sheet-id="<?php echo esc_attr( $sheet_id ); ?>">
+										<td class="palaplast-sort-handle-column"><span class="palaplast-sort-handle dashicons dashicons-menu" aria-label="<?php esc_attr_e( 'Drag to reorder', 'palaplast' ); ?>"></span><input type="hidden" name="sheet_order[<?php echo esc_attr( $category_key ); ?>][]" value="<?php echo esc_attr( $sheet_id ); ?>" /></td>
+										<td><?php echo esc_html( isset( $sheet_data['name'] ) ? $sheet_data['name'] : '' ); ?></td>
+										<td><?php echo ! empty( $sheet_data['brand_name'] ) ? esc_html( $sheet_data['brand_name'] ) : '—'; ?></td>
+										<td><?php if ( $file_url ) : ?><a href="<?php echo esc_url( $file_url ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $file_name ? $file_name : $file_url ); ?></a><?php else : esc_html_e( 'No file', 'palaplast' ); endif; ?></td>
+										<td><?php echo ! empty( $sheet_data['created_at'] ) ? esc_html( date_i18n( get_option( 'date_format' ), strtotime( $sheet_data['created_at'] ) ) ) : ''; ?></td>
+										<td><a class="button button-small" href="<?php echo esc_url( $edit_url ); ?>"><?php esc_html_e( 'Edit', 'palaplast' ); ?></a> <a class="button button-small" href="<?php echo esc_url( $delete_url ); ?>" onclick="return confirm('<?php echo esc_js( __( 'Delete this technical sheet?', 'palaplast' ) ); ?>');"><?php esc_html_e( 'Delete', 'palaplast' ); ?></a></td>
+									</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+				<?php endforeach; ?>
+				<?php submit_button( __( 'Save Order', 'palaplast' ) ); ?>
+			</form>
+		<?php endif; ?>
 	</div>
 	<?php
+}
+
+
+function palaplast_group_technical_sheets_by_category( $sheets ) {
+	$groups = array();
+
+	foreach ( $sheets as $sheet_id => $sheet ) {
+		if ( ! is_array( $sheet ) ) {
+			continue;
+		}
+
+		$category_slug = isset( $sheet['category'] ) ? sanitize_title( (string) $sheet['category'] ) : '';
+		$category_key  = '' !== $category_slug ? $category_slug : 'uncategorized';
+		$category_name = ! empty( $sheet['category_name'] ) ? sanitize_text_field( (string) $sheet['category_name'] ) : '';
+
+		if ( '' === $category_name ) {
+			$category_name = '' !== $category_slug ? ucwords( str_replace( '-', ' ', $category_slug ) ) : __( 'Uncategorized', 'palaplast' );
+		}
+
+		if ( ! isset( $groups[ $category_key ] ) ) {
+			$groups[ $category_key ] = array(
+				'name'   => $category_name,
+				'sheets' => array(),
+			);
+		}
+
+		$groups[ $category_key ]['sheets'][ $sheet_id ] = $sheet;
+	}
+
+	uksort(
+		$groups,
+		function ( $a, $b ) use ( $groups ) {
+			return strnatcasecmp( (string) $groups[ $a ]['name'], (string) $groups[ $b ]['name'] );
+		}
+	);
+
+	return $groups;
+}
+
+function palaplast_get_next_sheet_position( $sheets, $category_slug ) {
+	$category_slug = sanitize_title( (string) $category_slug );
+	$max_position  = 0;
+
+	foreach ( $sheets as $sheet ) {
+		if ( ! is_array( $sheet ) ) {
+			continue;
+		}
+
+		$sheet_category_slug = isset( $sheet['category'] ) ? sanitize_title( (string) $sheet['category'] ) : '';
+		if ( $sheet_category_slug !== $category_slug ) {
+			continue;
+		}
+
+		$max_position = max( $max_position, isset( $sheet['position'] ) ? (int) $sheet['position'] : 0 );
+	}
+
+	return $max_position + 1;
 }
 
 function palaplast_handle_save_sheet() {
@@ -170,6 +243,7 @@ function palaplast_handle_save_sheet() {
 
 	$sheets = palaplast_get_technical_sheets();
 	if ( $sheet_id && isset( $sheets[ $sheet_id ] ) ) {
+		$previous_category = isset( $sheets[ $sheet_id ]['category'] ) ? sanitize_title( (string) $sheets[ $sheet_id ]['category'] ) : '';
 		$sheets[ $sheet_id ]['name']          = $sheet_name;
 		$sheets[ $sheet_id ]['attachment_id'] = $attachment_id;
 		$sheets[ $sheet_id ]['category']      = $sheet_category_slug;
@@ -177,6 +251,9 @@ function palaplast_handle_save_sheet() {
 		$sheets[ $sheet_id ]['brand_name']    = $brand_name;
 		$sheets[ $sheet_id ]['brand_term_id'] = $brand_term_id;
 		$sheets[ $sheet_id ]['brand_logo_id'] = $brand_logo_id;
+		if ( $previous_category !== $sheet_category_slug || empty( $sheets[ $sheet_id ]['position'] ) ) {
+			$sheets[ $sheet_id ]['position'] = palaplast_get_next_sheet_position( $sheets, $sheet_category_slug );
+		}
 	} else {
 		$sheet_id            = time() + wp_rand( 1, 999 );
 		$sheets[ $sheet_id ] = array(
@@ -187,6 +264,7 @@ function palaplast_handle_save_sheet() {
 			'brand_name'    => $brand_name,
 			'brand_term_id' => $brand_term_id,
 			'brand_logo_id' => $brand_logo_id,
+			'position'      => palaplast_get_next_sheet_position( $sheets, $sheet_category_slug ),
 			'created_at'    => current_time( 'mysql' ),
 		);
 	}
@@ -216,5 +294,46 @@ function palaplast_handle_delete_sheet() {
 	}
 
 	wp_safe_redirect( admin_url( 'admin.php?page=palaplast-technical-sheets&sheet_deleted=1' ) );
+	exit;
+}
+
+
+function palaplast_handle_save_sheet_order() {
+	if ( ! current_user_can( 'manage_woocommerce' ) ) {
+		wp_die( esc_html__( 'Permission denied.', 'palaplast' ) );
+	}
+
+	check_admin_referer( 'palaplast_save_sheet_order' );
+
+	$sheets       = palaplast_get_technical_sheets();
+	$posted_order = isset( $_POST['sheet_order'] ) && is_array( $_POST['sheet_order'] ) ? wp_unslash( $_POST['sheet_order'] ) : array();
+
+	foreach ( $posted_order as $category_key => $sheet_ids ) {
+		if ( ! is_array( $sheet_ids ) ) {
+			continue;
+		}
+
+		$category_key = sanitize_title( (string) $category_key );
+		$position     = 1;
+
+		foreach ( $sheet_ids as $sheet_id ) {
+			$sheet_id = absint( $sheet_id );
+			if ( ! $sheet_id || ! isset( $sheets[ $sheet_id ] ) ) {
+				continue;
+			}
+
+			$sheet_category = isset( $sheets[ $sheet_id ]['category'] ) ? sanitize_title( (string) $sheets[ $sheet_id ]['category'] ) : '';
+			$sheet_category = '' !== $sheet_category ? $sheet_category : 'uncategorized';
+			if ( $sheet_category !== $category_key ) {
+				continue;
+			}
+
+			$sheets[ $sheet_id ]['position'] = $position;
+			++$position;
+		}
+	}
+
+	update_option( 'palaplast_technical_sheets', $sheets, false );
+	wp_safe_redirect( admin_url( 'admin.php?page=palaplast-technical-sheets&sheet_order_updated=1' ) );
 	exit;
 }

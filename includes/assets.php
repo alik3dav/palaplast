@@ -35,6 +35,16 @@ function palaplast_enqueue_admin_assets( $hook_suffix ) {
 
 	wp_enqueue_style( 'palaplast-admin', PALAPLAST_PLUGIN_URL . 'assets/css/palaplast-admin.css', array(), PALAPLAST_VERSION );
 
+	if ( 'woocommerce_page_palaplast-technical-sheets' === $hook_suffix ) {
+		wp_enqueue_script( 'jquery-ui-sortable' );
+		wp_add_inline_script(
+			'jquery-ui-sortable',
+			<<<'JS'
+jQuery(function($){$('.palaplast-sortable-sheets').sortable({axis:'y',handle:'.palaplast-sort-handle',items:'> tr',placeholder:'palaplast-sortable-placeholder',helper:function(e,tr){var originals=tr.children();var helper=tr.clone();helper.children().each(function(index){$(this).width(originals.eq(index).width());});return helper;},update:function(){var tbody=$(this);tbody.find('tr').each(function(){var input=$(this).find('input[type=hidden]');input.appendTo($(this).find('.palaplast-sort-handle-column'));});}});});
+JS
+		);
+	}
+
 	if ( 'woocommerce_page_palaplast-variation-colors' === $hook_suffix ) {
 		wp_enqueue_script( 'wp-util' );
 		return;
