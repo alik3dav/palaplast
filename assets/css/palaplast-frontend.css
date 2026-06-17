@@ -508,11 +508,11 @@
     position: relative;
     isolation: isolate;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 112px;
+    grid-template-columns: minmax(0, 1fr);
     align-items: stretch;
     aspect-ratio: 16 / 9;
     min-height: 0;
-    padding: 18px 12px 16px 18px;
+    padding: 18px;
     overflow: hidden;
     border: 1px solid #e5e7eb;
     border-radius: 14px;
@@ -578,7 +578,6 @@
 }
 
 .palaplast-technical-sheet-card__description {
-    max-width: 210px;
     margin: 8px 0 14px;
     color: #6b7280;
     font-size: 12px;
@@ -588,7 +587,6 @@
 .palaplast-technical-sheets-list .palaplast-technical-sheet-card .palaplast-pdf-list-item__action {
     width: auto;
     margin-top: auto;
-    gap: 8px;
     padding: 8px 12px;
     border: 1px solid rgba(237, 28, 36, .36);
     border-radius: 7px;
@@ -604,65 +602,6 @@
     color: #c4121a;
 }
 
-.palaplast-technical-sheet-card__action-icon {
-    font-size: 15px;
-    line-height: 1;
-}
-
-.palaplast-technical-sheet-card__visual {
-    position: relative;
-    min-width: 96px;
-}
-
-.palaplast-technical-sheet-card__paper {
-    position: absolute;
-    top: 8px;
-    right: 0;
-    width: 82px;
-    height: 112px;
-    border-radius: 8px 0 4px 4px;
-    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 42%, #eef2f7 100%);
-    box-shadow: 0 12px 24px rgba(15, 23, 42, .13);
-}
-
-.palaplast-technical-sheet-card__paper::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 28px;
-    height: 28px;
-    background: #e5e7eb;
-    clip-path: polygon(0 0, 100% 100%, 100% 0);
-}
-
-.palaplast-technical-sheet-card__paper::after {
-    content: "∿";
-    position: absolute;
-    top: 40px;
-    left: 25px;
-    color: rgba(237, 28, 36, .36);
-    font-size: 48px;
-    font-weight: 300;
-    line-height: 1;
-    transform: rotate(-22deg);
-}
-
-.palaplast-technical-sheet-card__pdf-label {
-    position: absolute;
-    top: 24px;
-    right: 50px;
-    z-index: 2;
-    padding: 4px 8px;
-    border-radius: 3px;
-    background: #ed1c24;
-    color: #fff;
-    font-size: 12px;
-    font-weight: 800;
-    line-height: 1;
-    box-shadow: 0 4px 10px rgba(237, 28, 36, .28);
-}
-
 @media (max-width: 560px) {
     .palaplast-technical-sheets-list .palaplast-technical-sheet-cards {
         grid-template-columns: 1fr;
@@ -673,10 +612,6 @@
         aspect-ratio: auto;
         min-height: 170px;
         padding: 18px;
-    }
-
-    .palaplast-technical-sheet-card__visual {
-        display: none;
     }
 
     .palaplast-technical-sheet-card__brand {

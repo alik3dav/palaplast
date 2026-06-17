@@ -393,10 +393,9 @@ function palaplast_render_pdf_list_shortcode( $items, $atts, $wrapper_class, $ti
 							<div class="palaplast-pdf-list-item__title"><?php echo esc_html( $item['name'] ); ?></div>
 							<p class="palaplast-technical-sheet-card__description"><?php echo esc_html( sprintf( __( 'Technical specifications and data for %s.', 'palaplast' ), $item['name'] ) ); ?></p>
 							<a class="palaplast-pdf-list-item__action" href="<?php echo esc_url( $item['file_url'] ); ?>" target="_blank" rel="noopener noreferrer">
-								<span class="palaplast-technical-sheet-card__action-icon" aria-hidden="true">▯</span><?php esc_html_e( 'Open PDF', 'palaplast' ); ?>
+								<?php esc_html_e( 'Open PDF', 'palaplast' ); ?>
 							</a>
 						</div>
-						<div class="palaplast-technical-sheet-card__visual" aria-hidden="true"><span class="palaplast-technical-sheet-card__pdf-label">PDF</span><span class="palaplast-technical-sheet-card__paper"></span></div>
 					</li>
 				<?php else : ?>
 					<li class="palaplast-pdf-list-item">
