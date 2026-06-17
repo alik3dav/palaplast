@@ -499,7 +499,8 @@
 
 .palaplast-technical-sheets-list .palaplast-technical-sheet-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 360px));
+    justify-content: start;
     gap: 16px;
 }
 
@@ -662,13 +663,11 @@
     box-shadow: 0 4px 10px rgba(237, 28, 36, .28);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 560px) {
     .palaplast-technical-sheets-list .palaplast-technical-sheet-cards {
         grid-template-columns: 1fr;
     }
-}
 
-@media (max-width: 560px) {
     .palaplast-technical-sheets-list .palaplast-technical-sheet-card {
         grid-template-columns: 1fr;
         aspect-ratio: auto;
