@@ -12,6 +12,7 @@ function palaplast_render_technical_sheets_page() {
 	$edit_id = absint( filter_input( INPUT_GET, 'edit_sheet', FILTER_SANITIZE_NUMBER_INT ) );
 	$sheet   = ( $edit_id && isset( $sheets[ $edit_id ] ) ) ? $sheets[ $edit_id ] : array();
 	$sheet_categories = palaplast_get_technical_sheet_categories();
+	$brand_terms      = function_exists( 'palaplast_get_product_brand_terms' ) ? palaplast_get_product_brand_terms() : array();
 	?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'Technical Sheets', 'palaplast' ); ?></h1>
@@ -70,25 +71,20 @@ function palaplast_render_technical_sheets_page() {
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="palaplast_sheet_brand_name"><?php esc_html_e( 'Brand', 'palaplast' ); ?></label></th>
+						<th scope="row"><label for="palaplast_sheet_brand_term_id"><?php esc_html_e( 'Brand', 'palaplast' ); ?></label></th>
 						<td>
-							<input type="text" class="regular-text" id="palaplast_sheet_brand_name" name="sheet_brand_name" value="<?php echo isset( $sheet['brand_name'] ) ? esc_attr( $sheet['brand_name'] ) : ''; ?>" placeholder="<?php echo esc_attr__( 'Brand name', 'palaplast' ); ?>" />
-							<?php $brand_logo_id = isset( $sheet['brand_logo_id'] ) ? (int) $sheet['brand_logo_id'] : 0; ?>
-							<input type="hidden" id="palaplast_brand_logo_id" name="brand_logo_id" value="<?php echo esc_attr( $brand_logo_id ); ?>" />
-							<p>
-								<button class="button palaplast-select-brand-logo"><?php esc_html_e( 'Select Brand Logo', 'palaplast' ); ?></button>
-								<button class="button palaplast-remove-brand-logo"><?php esc_html_e( 'Remove Logo', 'palaplast' ); ?></button>
-							</p>
-							<p class="description palaplast-selected-brand-logo">
-								<?php
-								if ( $brand_logo_id ) {
-									echo esc_html( basename( (string) get_attached_file( $brand_logo_id ) ) );
-								} else {
-									esc_html_e( 'No logo selected.', 'palaplast' );
-								}
-								?>
-							</p>
-							<p class="description"><?php esc_html_e( 'Optional: show this brand logo on the frontend technical sheet card.', 'palaplast' ); ?></p>
+							<?php $selected_brand_term_id = isset( $sheet['brand_term_id'] ) ? (int) $sheet['brand_term_id'] : 0; ?>
+							<select id="palaplast_sheet_brand_term_id" name="sheet_brand_term_id">
+								<option value=""><?php esc_html_e( '— No brand —', 'palaplast' ); ?></option>
+								<?php foreach ( $brand_terms as $brand_term ) : ?>
+									<option value="<?php echo esc_attr( $brand_term->term_id ); ?>" <?php selected( $selected_brand_term_id, (int) $brand_term->term_id ); ?>><?php echo esc_html( $brand_term->name ); ?></option>
+								<?php endforeach; ?>
+							</select>
+							<?php if ( empty( $brand_terms ) ) : ?>
+								<p class="description"><?php esc_html_e( 'No WooCommerce product brands were found.', 'palaplast' ); ?></p>
+							<?php else : ?>
+								<p class="description"><?php esc_html_e( 'Choose a brand from the WooCommerce product brands list. The brand logo is used automatically when available.', 'palaplast' ); ?></p>
+							<?php endif; ?>
 						</td>
 					</tr>
 					<tr>
@@ -155,8 +151,11 @@ function palaplast_handle_save_sheet() {
 	$sheet_id      = isset( $_POST['sheet_id'] ) ? absint( wp_unslash( $_POST['sheet_id'] ) ) : 0;
 	$sheet_name    = isset( $_POST['sheet_name'] ) ? sanitize_text_field( wp_unslash( $_POST['sheet_name'] ) ) : '';
 	$attachment_id = isset( $_POST['attachment_id'] ) ? absint( wp_unslash( $_POST['attachment_id'] ) ) : 0;
-	$brand_name    = isset( $_POST['sheet_brand_name'] ) ? sanitize_text_field( wp_unslash( $_POST['sheet_brand_name'] ) ) : '';
-	$brand_logo_id = isset( $_POST['brand_logo_id'] ) ? absint( wp_unslash( $_POST['brand_logo_id'] ) ) : 0;
+	$brand_term_id  = isset( $_POST['sheet_brand_term_id'] ) ? absint( wp_unslash( $_POST['sheet_brand_term_id'] ) ) : 0;
+	$brand_taxonomy = function_exists( 'palaplast_get_product_brand_taxonomy' ) ? palaplast_get_product_brand_taxonomy() : '';
+	$brand_term     = ( $brand_term_id && '' !== $brand_taxonomy ) ? get_term( $brand_term_id, $brand_taxonomy ) : null;
+	$brand_name    = $brand_term instanceof WP_Term ? $brand_term->name : '';
+	$brand_logo_id = ( $brand_term instanceof WP_Term && function_exists( 'palaplast_get_product_brand_logo_id' ) ) ? palaplast_get_product_brand_logo_id( $brand_term_id ) : 0;
 	$selected_category_slug = isset( $_POST['sheet_category'] ) ? sanitize_title( wp_unslash( $_POST['sheet_category'] ) ) : '';
 	$new_category_name      = isset( $_POST['sheet_category_new'] ) ? sanitize_text_field( wp_unslash( $_POST['sheet_category_new'] ) ) : '';
 	$new_category_slug      = sanitize_title( $new_category_name );
@@ -176,6 +175,7 @@ function palaplast_handle_save_sheet() {
 		$sheets[ $sheet_id ]['category']      = $sheet_category_slug;
 		$sheets[ $sheet_id ]['category_name'] = $sheet_category_name;
 		$sheets[ $sheet_id ]['brand_name']    = $brand_name;
+		$sheets[ $sheet_id ]['brand_term_id'] = $brand_term_id;
 		$sheets[ $sheet_id ]['brand_logo_id'] = $brand_logo_id;
 	} else {
 		$sheet_id            = time() + wp_rand( 1, 999 );
@@ -185,6 +185,7 @@ function palaplast_handle_save_sheet() {
 			'category'      => $sheet_category_slug,
 			'category_name' => $sheet_category_name,
 			'brand_name'    => $brand_name,
+			'brand_term_id' => $brand_term_id,
 			'brand_logo_id' => $brand_logo_id,
 			'created_at'    => current_time( 'mysql' ),
 		);
