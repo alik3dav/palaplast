@@ -139,3 +139,40 @@
 .palaplast-shortcodes-table code {
 	white-space: nowrap;
 }
+
+.palaplast-admin-list-description {
+	max-width: 980px;
+}
+
+.palaplast-sheet-order-form {
+	max-width: 980px;
+}
+
+.palaplast-sheet-category-sort-group {
+	margin: 20px 0 28px;
+}
+
+.palaplast-sheet-category-sort-title {
+	margin-bottom: 8px;
+}
+
+.palaplast-sort-handle-column {
+	width: 58px;
+	text-align: center;
+}
+
+.palaplast-sort-handle {
+	cursor: move;
+	color: #646970;
+}
+
+.palaplast-sortable-sheet-row.ui-sortable-helper {
+	background: #fff;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+}
+
+.palaplast-sortable-placeholder {
+	height: 48px;
+	background: #f0f6fc !important;
+	outline: 2px dashed #72aee6;
+}

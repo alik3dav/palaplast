@@ -6,7 +6,34 @@ if ( ! defined( 'ABSPATH' ) ) {
 function palaplast_get_technical_sheets() {
 	$sheets = get_option( 'palaplast_technical_sheets', array() );
 
-	return is_array( $sheets ) ? $sheets : array();
+	if ( ! is_array( $sheets ) ) {
+		return array();
+	}
+
+	uksort(
+		$sheets,
+		function ( $a, $b ) use ( $sheets ) {
+			$sheet_a = isset( $sheets[ $a ] ) && is_array( $sheets[ $a ] ) ? $sheets[ $a ] : array();
+			$sheet_b = isset( $sheets[ $b ] ) && is_array( $sheets[ $b ] ) ? $sheets[ $b ] : array();
+
+			$category_a = ! empty( $sheet_a['category_name'] ) ? (string) $sheet_a['category_name'] : ( isset( $sheet_a['category'] ) ? (string) $sheet_a['category'] : '' );
+			$category_b = ! empty( $sheet_b['category_name'] ) ? (string) $sheet_b['category_name'] : ( isset( $sheet_b['category'] ) ? (string) $sheet_b['category'] : '' );
+			$category_compare = strnatcasecmp( $category_a, $category_b );
+			if ( 0 !== $category_compare ) {
+				return $category_compare;
+			}
+
+			$position_a = isset( $sheet_a['position'] ) ? (int) $sheet_a['position'] : PHP_INT_MAX;
+			$position_b = isset( $sheet_b['position'] ) ? (int) $sheet_b['position'] : PHP_INT_MAX;
+			if ( $position_a !== $position_b ) {
+				return $position_a <=> $position_b;
+			}
+
+			return (int) $a <=> (int) $b;
+		}
+	);
+
+	return $sheets;
 }
 
 function palaplast_get_technical_sheet_categories() {
