@@ -429,10 +429,6 @@
     color: #4b5563
 }
 
-
-
-
-
 .palaplast-certificates-list .palaplast-certificate-card .palaplast-pdf-list-item__action {
     
     align-self: flex-start
@@ -529,21 +525,10 @@
     opacity: .52;
 }
 
-.palaplast-technical-sheets-list .palaplast-technical-sheet-card::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    z-index: -1;
-    width: 96px;
-    height: 76px;
-    background: #ed1c24;
-    border-top-left-radius: 100% 100%;
-}
-
 .palaplast-technical-sheet-card__content {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     align-items: flex-start;
     min-width: 0;
 }
@@ -552,13 +537,13 @@
     display: flex;
     align-items: center;
     height: 30px;
-    margin-bottom: 12px;
+
 }
 
 .palaplast-technical-sheet-card__brand-logo {
     display: block;
     width: auto;
-    max-width: 130px;
+    max-width: 120px;
     max-height: 30px;
     object-fit: contain;
 }
@@ -572,13 +557,13 @@
 
 .palaplast-technical-sheets-list .palaplast-technical-sheet-card .palaplast-pdf-list-item__title {
     color: #0f172a;
-    font-size: clamp(16px, 1.6vw, 19px);
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 600;
     line-height: 1.15;
 }
 
 .palaplast-technical-sheet-card__description {
-    margin: 8px 0 14px;
+    margin: 8px 0 12px;
     color: #6b7280;
     font-size: 12px;
     line-height: 1.35;
@@ -586,7 +571,6 @@
 
 .palaplast-technical-sheets-list .palaplast-technical-sheet-card .palaplast-pdf-list-item__action {
     width: auto;
-    margin-top: auto;
     padding: 8px 12px;
     border: 1px solid rgba(237, 28, 36, .36);
     border-radius: 7px;
@@ -606,15 +590,13 @@
     .palaplast-technical-sheets-list .palaplast-technical-sheet-cards {
         grid-template-columns: 1fr;
     }
-
     .palaplast-technical-sheets-list .palaplast-technical-sheet-card {
         grid-template-columns: 1fr;
         aspect-ratio: auto;
         min-height: 170px;
         padding: 18px;
     }
-
     .palaplast-technical-sheet-card__brand {
-        margin-bottom: 16px;
+        margin-bottom: 2px;
     }
 }
