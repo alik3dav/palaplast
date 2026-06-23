@@ -74,6 +74,7 @@ function palaplast_jobs_shortcode( $atts ) {
 				<?php endif; ?>
 				<div class="palaplast-job-card__content">
 					<h3 class="palaplast-job-card__title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+					<?php echo palaplast_render_job_details( get_the_ID(), 'palaplast-job-card__details' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in helper. ?>
 					<?php if ( $show_excerpt ) : ?>
 						<div class="palaplast-job-card__excerpt"><?php the_excerpt(); ?></div>
 					<?php endif; ?>
@@ -566,6 +567,11 @@ add_filter( 'the_content', 'palaplast_append_job_contact_form_to_content', 20 );
 function palaplast_append_job_contact_form_to_content( $content ) {
 	if ( ! is_singular( 'palaplast_job' ) || ! in_the_loop() || ! is_main_query() ) {
 		return $content;
+	}
+
+	$job_details = palaplast_render_job_details( get_the_ID(), 'palaplast-job-single-details' );
+	if ( '' !== $job_details ) {
+		$content = $job_details . $content;
 	}
 
 	$form_shortcode = palaplast_get_job_contact_form_shortcode();
