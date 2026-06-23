@@ -9,6 +9,7 @@ add_action( 'admin_menu', 'palaplast_register_pricelists_menu' );
 add_action( 'admin_menu', 'palaplast_register_variation_colors_menu' );
 add_action( 'admin_menu', 'palaplast_register_certificates_menu' );
 add_action( 'admin_menu', 'palaplast_register_jobs_menu' );
+add_action( 'admin_menu', 'palaplast_register_job_settings_menu' );
 add_action( 'admin_enqueue_scripts', 'palaplast_enqueue_admin_assets' );
 add_action( 'admin_post_palaplast_save_sheet', 'palaplast_handle_save_sheet' );
 add_action( 'admin_post_palaplast_delete_sheet', 'palaplast_handle_delete_sheet' );
@@ -16,6 +17,7 @@ add_action( 'admin_post_palaplast_save_sheet_order', 'palaplast_handle_save_shee
 add_action( 'admin_post_palaplast_save_pricelist', 'palaplast_handle_save_pricelist' );
 add_action( 'admin_post_palaplast_delete_pricelist', 'palaplast_handle_delete_pricelist' );
 add_action( 'admin_post_palaplast_save_variation_colors', 'palaplast_handle_save_variation_colors' );
+add_action( 'admin_post_palaplast_save_job_settings', 'palaplast_handle_save_job_settings' );
 add_action( 'product_cat_add_form_fields', 'palaplast_render_category_sheet_add_field' );
 add_action( 'product_cat_edit_form_fields', 'palaplast_render_category_sheet_edit_field' );
 add_action( 'product_cat_add_form_fields', 'palaplast_render_category_pricelist_add_field' );
@@ -56,6 +58,10 @@ function palaplast_register_certificates_menu() {
 function palaplast_register_jobs_menu() {
 	add_submenu_page( 'woocommerce', __( 'Jobs', 'palaplast' ), __( 'Jobs', 'palaplast' ), 'manage_woocommerce', 'edit.php?post_type=palaplast_job' );
 	add_submenu_page( 'woocommerce', __( 'Add Job', 'palaplast' ), __( 'Add Job', 'palaplast' ), 'manage_woocommerce', 'post-new.php?post_type=palaplast_job' );
+}
+
+function palaplast_register_job_settings_menu() {
+	add_submenu_page( 'woocommerce', __( 'Job Settings', 'palaplast' ), __( 'Job Settings', 'palaplast' ), 'manage_woocommerce', 'palaplast-job-settings', 'palaplast_render_job_settings_page' );
 }
 
 function palaplast_render_certificates_shortcode_notice() {
