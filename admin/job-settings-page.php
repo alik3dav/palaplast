@@ -22,6 +22,13 @@ function palaplast_render_job_settings_page() {
 		<?php endif; ?>
 
 		<div class="card palaplast-admin-card">
+			<h2 class="palaplast-admin-card-title"><?php esc_html_e( 'Jobs Cards Shortcode', 'palaplast' ); ?></h2>
+			<p><?php esc_html_e( 'Add this shortcode to any page where you want to show the published Job posts as cards:', 'palaplast' ); ?></p>
+			<p><code>[palaplast_jobs]</code></p>
+			<p class="description"><?php esc_html_e( 'Optional example: [palaplast_jobs posts_per_page="6" orderby="date" order="DESC" show_excerpt="yes"]', 'palaplast' ); ?></p>
+		</div>
+
+		<div class="card palaplast-admin-card">
 			<h2 class="palaplast-admin-card-title"><?php esc_html_e( 'Job Contact Form', 'palaplast' ); ?></h2>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<?php wp_nonce_field( 'palaplast_save_job_settings' ); ?>

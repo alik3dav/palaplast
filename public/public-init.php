@@ -13,6 +13,80 @@ add_shortcode( 'palaplast_pricelist_pdf', 'palaplast_pricelist_button_shortcode'
 add_shortcode( 'palaplast_technical_sheets_list', 'palaplast_technical_sheets_list_shortcode' );
 add_shortcode( 'palaplast_pricelists_list', 'palaplast_pricelists_list_shortcode' );
 add_shortcode( 'palaplast_certificates_list', 'palaplast_certificates_list_shortcode' );
+add_shortcode( 'palaplast_jobs', 'palaplast_jobs_shortcode' );
+
+
+function palaplast_jobs_shortcode( $atts ) {
+	$atts = shortcode_atts(
+		array(
+			'posts_per_page' => -1,
+			'order'          => 'DESC',
+			'orderby'        => 'date',
+			'show_excerpt'   => 'yes',
+		),
+		$atts,
+		'palaplast_jobs'
+	);
+
+	$posts_per_page = (int) $atts['posts_per_page'];
+	if ( 0 === $posts_per_page || $posts_per_page < -1 ) {
+		$posts_per_page = -1;
+	}
+
+	$order = strtoupper( (string) $atts['order'] );
+	if ( ! in_array( $order, array( 'ASC', 'DESC' ), true ) ) {
+		$order = 'DESC';
+	}
+
+	$allowed_orderby = array( 'date', 'title', 'menu_order', 'rand' );
+	$orderby         = sanitize_key( (string) $atts['orderby'] );
+	if ( ! in_array( $orderby, $allowed_orderby, true ) ) {
+		$orderby = 'date';
+	}
+
+	$jobs = new WP_Query(
+		array(
+			'post_type'           => 'palaplast_job',
+			'post_status'         => 'publish',
+			'posts_per_page'      => $posts_per_page,
+			'order'               => $order,
+			'orderby'             => $orderby,
+			'ignore_sticky_posts' => true,
+		)
+	);
+
+	if ( ! $jobs->have_posts() ) {
+		return '<p class="palaplast-jobs-empty">' . esc_html__( 'No jobs are currently available.', 'palaplast' ) . '</p>';
+	}
+
+	$show_excerpt = 'no' !== strtolower( (string) $atts['show_excerpt'] );
+
+	ob_start();
+	?>
+	<div class="palaplast-jobs-cards">
+		<?php while ( $jobs->have_posts() ) : ?>
+			<?php $jobs->the_post(); ?>
+			<article class="palaplast-job-card">
+				<?php if ( has_post_thumbnail() ) : ?>
+					<a class="palaplast-job-card__image" href="<?php the_permalink(); ?>" aria-label="<?php the_title_attribute(); ?>">
+						<?php the_post_thumbnail( 'medium_large' ); ?>
+					</a>
+				<?php endif; ?>
+				<div class="palaplast-job-card__content">
+					<h3 class="palaplast-job-card__title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+					<?php if ( $show_excerpt ) : ?>
+						<div class="palaplast-job-card__excerpt"><?php the_excerpt(); ?></div>
+					<?php endif; ?>
+					<a class="palaplast-job-card__link" href="<?php the_permalink(); ?>"><?php esc_html_e( 'View job', 'palaplast' ); ?></a>
+				</div>
+			</article>
+		<?php endwhile; ?>
+	</div>
+	<?php
+	wp_reset_postdata();
+
+	return (string) ob_get_clean();
+}
 
 function palaplast_hide_variable_unavailable_message( $translation, $text, $domain ) {
 	if ( is_admin() || wp_doing_ajax() ) {

@@ -62,6 +62,11 @@ function palaplast_render_dashboard_page() {
 			'description' => __( 'Shows all published certificates with PDF download links.', 'palaplast' ),
 			'example'     => '[palaplast_certificates_list]',
 		),
+		array(
+			'code'        => '[palaplast_jobs]',
+			'description' => __( 'Shows published jobs as frontend cards.', 'palaplast' ),
+			'example'     => '[palaplast_jobs posts_per_page="6"]',
+		),
 	);
 	?>
 	<div class="wrap palaplast-dashboard-wrap">
