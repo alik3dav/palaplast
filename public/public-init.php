@@ -485,3 +485,24 @@ function palaplast_resolve_custom_attribute_value( $product, $attribute, $curren
 function palaplast_normalize_attribute_value( $value ) {
 	return sanitize_title( rawurldecode( wp_unslash( (string) $value ) ) );
 }
+
+add_filter( 'the_content', 'palaplast_append_job_contact_form_to_content', 20 );
+
+
+function palaplast_append_job_contact_form_to_content( $content ) {
+	if ( ! is_singular( 'palaplast_job' ) || ! in_the_loop() || ! is_main_query() ) {
+		return $content;
+	}
+
+	$form_shortcode = palaplast_get_job_contact_form_shortcode();
+	if ( '' === $form_shortcode ) {
+		return $content;
+	}
+
+	$form_output = do_shortcode( $form_shortcode );
+	if ( '' === trim( wp_strip_all_tags( $form_output ) ) && false === strpos( $form_output, '<form' ) ) {
+		return $content;
+	}
+
+	return $content . '<div class="palaplast-job-contact-form">' . $form_output . '</div>';
+}

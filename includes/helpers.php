@@ -536,3 +536,8 @@ function palaplast_get_product_pricelist( $product_id ) {
 
 	return $candidates[0]['pricelist'];
 }
+
+
+function palaplast_get_job_contact_form_shortcode() {
+	return trim( (string) get_option( 'palaplast_job_contact_form_shortcode', '' ) );
+}
