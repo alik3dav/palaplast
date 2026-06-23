@@ -43,4 +43,43 @@ function palaplast_register_custom_post_types() {
 			'supports'           => array( 'title', 'editor', 'thumbnail', 'custom-fields', 'revisions' ),
 		)
 	);
+
+	$job_labels = array(
+		'name'               => __( 'Jobs', 'palaplast' ),
+		'singular_name'      => __( 'Job', 'palaplast' ),
+		'menu_name'          => __( 'Jobs', 'palaplast' ),
+		'name_admin_bar'     => __( 'Job', 'palaplast' ),
+		'add_new'            => __( 'Add New', 'palaplast' ),
+		'add_new_item'       => __( 'Add New Job', 'palaplast' ),
+		'new_item'           => __( 'New Job', 'palaplast' ),
+		'edit_item'          => __( 'Edit Job', 'palaplast' ),
+		'view_item'          => __( 'View Job', 'palaplast' ),
+		'all_items'          => __( 'All Jobs', 'palaplast' ),
+		'search_items'       => __( 'Search Jobs', 'palaplast' ),
+		'not_found'          => __( 'No jobs found.', 'palaplast' ),
+		'not_found_in_trash' => __( 'No jobs found in Trash.', 'palaplast' ),
+	);
+
+	register_post_type(
+		'palaplast_job',
+		array(
+			'labels'             => $job_labels,
+			'public'             => true,
+			'show_ui'            => true,
+			'show_in_menu'       => false,
+			'show_in_admin_bar'  => true,
+			'show_in_nav_menus'  => true,
+			'show_in_rest'       => true,
+			'exclude_from_search'=> false,
+			'publicly_queryable' => true,
+			'has_archive'        => true,
+			'query_var'          => true,
+			'rewrite'            => array( 'slug' => 'jobs' ),
+			'map_meta_cap'       => true,
+			'capability_type'    => 'post',
+			'menu_icon'          => 'dashicons-businessperson',
+			'supports'           => array( 'title', 'editor', 'excerpt', 'thumbnail', 'custom-fields', 'revisions' ),
+		)
+	);
+
 }
