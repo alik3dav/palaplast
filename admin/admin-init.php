@@ -33,6 +33,68 @@ add_action( 'woocommerce_save_product_variation', 'palaplast_save_variation_attr
 add_action( 'admin_notices', 'palaplast_render_certificates_shortcode_notice' );
 add_action( 'add_meta_boxes', 'palaplast_register_certificate_pdf_metabox' );
 add_action( 'save_post_palaplast_cert', 'palaplast_save_certificate_pdf_metabox' );
+add_action( 'add_meta_boxes_palaplast_job', 'palaplast_register_job_details_metabox' );
+add_action( 'save_post_palaplast_job', 'palaplast_save_job_details_metabox' );
+
+
+function palaplast_register_job_details_metabox() {
+	add_meta_box(
+		'palaplast-job-details',
+		__( 'Job Details', 'palaplast' ),
+		'palaplast_render_job_details_metabox',
+		'palaplast_job',
+		'side',
+		'default'
+	);
+}
+
+function palaplast_render_job_details_metabox( $post ) {
+	wp_nonce_field( 'palaplast_save_job_details', 'palaplast_job_details_nonce' );
+
+	$fields = palaplast_get_job_detail_fields();
+	?>
+	<div class="palaplast-job-details-fields">
+		<?php foreach ( $fields as $field_key => $field ) : ?>
+			<p>
+				<label for="<?php echo esc_attr( $field['meta_key'] ); ?>"><strong><?php echo esc_html( $field['label'] ); ?></strong></label>
+				<input
+					type="text"
+					class="widefat"
+					id="<?php echo esc_attr( $field['meta_key'] ); ?>"
+					name="<?php echo esc_attr( $field['meta_key'] ); ?>"
+					value="<?php echo esc_attr( get_post_meta( $post->ID, $field['meta_key'], true ) ); ?>"
+				/>
+			</p>
+		<?php endforeach; ?>
+	</div>
+	<?php
+}
+
+function palaplast_save_job_details_metabox( $post_id ) {
+	if ( ! isset( $_POST['palaplast_job_details_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['palaplast_job_details_nonce'] ) ), 'palaplast_save_job_details' ) ) {
+		return;
+	}
+
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		return;
+	}
+
+	foreach ( palaplast_get_job_detail_fields() as $field ) {
+		$meta_key = $field['meta_key'];
+		$value    = isset( $_POST[ $meta_key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $meta_key ] ) ) : '';
+
+		if ( '' === $value ) {
+			delete_post_meta( $post_id, $meta_key );
+			continue;
+		}
+
+		update_post_meta( $post_id, $meta_key, $value );
+	}
+}
 
 function palaplast_register_dashboard_menu() {
 	add_submenu_page( 'woocommerce', __( 'Palaplast Dashboard', 'palaplast' ), __( 'Palaplast', 'palaplast' ), 'manage_woocommerce', 'palaplast-dashboard', 'palaplast_render_dashboard_page' );

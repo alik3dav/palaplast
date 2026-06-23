@@ -541,3 +541,59 @@ function palaplast_get_product_pricelist( $product_id ) {
 function palaplast_get_job_contact_form_shortcode() {
 	return trim( (string) get_option( 'palaplast_job_contact_form_shortcode', '' ) );
 }
+
+function palaplast_get_job_detail_fields() {
+	return array(
+		'location'         => array(
+			'label'    => __( 'Location', 'palaplast' ),
+			'meta_key' => '_palaplast_job_location',
+		),
+		'employment_type'  => array(
+			'label'    => __( 'Employment Type', 'palaplast' ),
+			'meta_key' => '_palaplast_job_employment_type',
+		),
+		'experience_level' => array(
+			'label'    => __( 'Experience Level', 'palaplast' ),
+			'meta_key' => '_palaplast_job_experience_level',
+		),
+	);
+}
+
+function palaplast_get_job_details( $post_id ) {
+	$details = array();
+
+	foreach ( palaplast_get_job_detail_fields() as $field_key => $field ) {
+		$value = trim( (string) get_post_meta( $post_id, $field['meta_key'], true ) );
+		if ( '' === $value ) {
+			continue;
+		}
+
+		$details[ $field_key ] = array(
+			'label' => $field['label'],
+			'value' => $value,
+		);
+	}
+
+	return $details;
+}
+
+function palaplast_render_job_details( $post_id, $class_name = 'palaplast-job-details' ) {
+	$details = palaplast_get_job_details( $post_id );
+	if ( empty( $details ) ) {
+		return '';
+	}
+
+	ob_start();
+	?>
+	<ul class="<?php echo esc_attr( $class_name ); ?>">
+		<?php foreach ( $details as $detail ) : ?>
+			<li class="<?php echo esc_attr( $class_name . '__item' ); ?>">
+				<span class="<?php echo esc_attr( $class_name . '__label' ); ?>"><?php echo esc_html( $detail['label'] ); ?></span>
+				<span class="<?php echo esc_attr( $class_name . '__value' ); ?>"><?php echo esc_html( $detail['value'] ); ?></span>
+			</li>
+		<?php endforeach; ?>
+	</ul>
+	<?php
+
+	return (string) ob_get_clean();
+}
