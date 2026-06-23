@@ -8,6 +8,7 @@ add_action( 'admin_menu', 'palaplast_register_technical_sheets_menu' );
 add_action( 'admin_menu', 'palaplast_register_pricelists_menu' );
 add_action( 'admin_menu', 'palaplast_register_variation_colors_menu' );
 add_action( 'admin_menu', 'palaplast_register_certificates_menu' );
+add_action( 'admin_menu', 'palaplast_register_jobs_menu' );
 add_action( 'admin_enqueue_scripts', 'palaplast_enqueue_admin_assets' );
 add_action( 'admin_post_palaplast_save_sheet', 'palaplast_handle_save_sheet' );
 add_action( 'admin_post_palaplast_delete_sheet', 'palaplast_handle_delete_sheet' );
@@ -50,6 +51,11 @@ function palaplast_register_variation_colors_menu() {
 function palaplast_register_certificates_menu() {
 	add_submenu_page( 'woocommerce', __( 'Certificates', 'palaplast' ), __( 'Certificates', 'palaplast' ), 'manage_woocommerce', 'edit.php?post_type=palaplast_cert' );
 	add_submenu_page( 'woocommerce', __( 'Add Certificate', 'palaplast' ), __( 'Add Certificate', 'palaplast' ), 'manage_woocommerce', 'post-new.php?post_type=palaplast_cert' );
+}
+
+function palaplast_register_jobs_menu() {
+	add_submenu_page( 'woocommerce', __( 'Jobs', 'palaplast' ), __( 'Jobs', 'palaplast' ), 'manage_woocommerce', 'edit.php?post_type=palaplast_job' );
+	add_submenu_page( 'woocommerce', __( 'Add Job', 'palaplast' ), __( 'Add Job', 'palaplast' ), 'manage_woocommerce', 'post-new.php?post_type=palaplast_job' );
 }
 
 function palaplast_render_certificates_shortcode_notice() {
