@@ -176,3 +176,21 @@
 	background: #f0f6fc !important;
 	outline: 2px dashed #72aee6;
 }
+
+#variable_product_options .woocommerce_variation h3 .palaplast-variation-header-sku {
+	display: inline-block;
+	max-width: 180px;
+	padding: 2px 7px;
+	margin-left: 8px;
+	overflow: hidden;
+	color: #50575e;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.4;
+	text-overflow: ellipsis;
+	vertical-align: middle;
+	white-space: nowrap;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 999px;
+}
