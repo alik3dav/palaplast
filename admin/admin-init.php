@@ -29,6 +29,7 @@ add_action( 'edited_product_cat', 'palaplast_save_category_pricelist' );
 add_action( 'woocommerce_product_options_general_product_data', 'palaplast_render_variation_table_custom_rows_field' );
 add_action( 'woocommerce_admin_process_product_object', 'palaplast_save_variation_table_custom_rows_field' );
 add_action( 'woocommerce_product_after_variable_attributes', 'palaplast_render_variation_attribute_color_fields', 10, 3 );
+add_action( 'woocommerce_variation_header', 'palaplast_render_variation_header_sku', 10, 2 );
 add_action( 'woocommerce_save_product_variation', 'palaplast_save_variation_attribute_color_fields', 10, 2 );
 add_action( 'admin_notices', 'palaplast_render_certificates_shortcode_notice' );
 add_action( 'add_meta_boxes', 'palaplast_register_certificate_pdf_metabox' );
@@ -201,6 +202,29 @@ function palaplast_save_certificate_pdf_metabox( $post_id ) {
 	delete_post_meta( $post_id, 'palaplast_certificate_pdf_id' );
 }
 
+
+
+function palaplast_render_variation_header_sku( $variation, $loop ) {
+	if ( ! $variation instanceof WP_Post ) {
+		return;
+	}
+
+	$variation_product = wc_get_product( $variation->ID );
+	if ( ! $variation_product instanceof WC_Product_Variation ) {
+		return;
+	}
+
+	$sku = $variation_product->get_sku();
+	if ( '' === $sku ) {
+		return;
+	}
+	?>
+	<span class="palaplast-variation-header-sku" title="<?php echo esc_attr( sprintf( __( 'SKU: %s', 'palaplast' ), $sku ) ); ?>">
+		<span class="screen-reader-text"><?php esc_html_e( 'SKU:', 'palaplast' ); ?></span>
+		<?php echo esc_html( $sku ); ?>
+	</span>
+	<?php
+}
 
 function palaplast_get_variation_attribute_color_options() {
 	$options = array(
