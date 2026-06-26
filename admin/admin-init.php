@@ -323,11 +323,7 @@ function palaplast_render_variation_table_custom_rows_field() {
 	$rows = get_post_meta( $post->ID, '_palaplast_variation_table_custom_rows', true );
 	$rows = is_array( $rows ) ? array_values( $rows ) : array();
 
-	$style_options = array(
-		'info'    => __( 'Info', 'palaplast' ),
-		'warning' => __( 'Warning', 'palaplast' ),
-		'note'    => __( 'Note', 'palaplast' ),
-	);
+	$color_options = palaplast_get_variation_attribute_color_options();
 	?>
 	<div class="options_group show_if_variable">
 		<p class="form-field">
@@ -338,8 +334,9 @@ function palaplast_render_variation_table_custom_rows_field() {
 			<?php foreach ( $rows as $index => $row ) :
 				$position = isset( $row['position'] ) ? (int) $row['position'] : 1;
 				$text     = isset( $row['text'] ) ? (string) $row['text'] : '';
-				$style    = isset( $row['style'] ) ? (string) $row['style'] : 'info';
-				$enabled  = isset( $row['enabled'] ) ? (bool) $row['enabled'] : true;
+				$background_color = isset( $row['background_color'] ) ? sanitize_hex_color( (string) $row['background_color'] ) : '';
+				$text_color       = isset( $row['text_color'] ) ? sanitize_hex_color( (string) $row['text_color'] ) : '';
+				$enabled          = isset( $row['enabled'] ) ? (bool) $row['enabled'] : true;
 				?>
 				<div class="palaplast-custom-row-item">
 					<p class="form-field palaplast-custom-row-position-field">
@@ -350,13 +347,17 @@ function palaplast_render_variation_table_custom_rows_field() {
 						<label><?php esc_html_e( 'Text', 'palaplast' ); ?></label>
 						<textarea name="palaplast_custom_rows[<?php echo esc_attr( $index ); ?>][text]" rows="3"><?php echo esc_textarea( $text ); ?></textarea>
 					</p>
-					<p class="form-field palaplast-custom-row-style-field">
-						<label><?php esc_html_e( 'Style', 'palaplast' ); ?></label>
-						<select name="palaplast_custom_rows[<?php echo esc_attr( $index ); ?>][style]">
-							<?php foreach ( $style_options as $style_key => $style_label ) : ?>
-								<option value="<?php echo esc_attr( $style_key ); ?>" <?php selected( $style, $style_key ); ?>><?php echo esc_html( $style_label ); ?></option>
+					<p class="form-field palaplast-custom-row-background-color-field">
+						<label><?php esc_html_e( 'Background Color', 'palaplast' ); ?></label>
+						<select name="palaplast_custom_rows[<?php echo esc_attr( $index ); ?>][background_color]">
+							<?php foreach ( $color_options as $color_value => $color_label ) : ?>
+								<option value="<?php echo esc_attr( $color_value ); ?>" <?php selected( $background_color, $color_value ); ?>><?php echo esc_html( $color_label ); ?></option>
 							<?php endforeach; ?>
 						</select>
+					</p>
+					<p class="form-field palaplast-custom-row-text-color-field">
+						<label><?php esc_html_e( 'Text Color', 'palaplast' ); ?></label>
+						<input type="color" name="palaplast_custom_rows[<?php echo esc_attr( $index ); ?>][text_color]" value="<?php echo esc_attr( $text_color ? $text_color : '#000000' ); ?>" />
 					</p>
 					<p class="form-field palaplast-custom-row-enabled-field">
 						<label><?php esc_html_e( 'Enabled', 'palaplast' ); ?></label>
@@ -378,13 +379,17 @@ function palaplast_render_variation_table_custom_rows_field() {
 				<label><?php esc_html_e( 'Text', 'palaplast' ); ?></label>
 				<textarea name="palaplast_custom_rows[{{{data.index}}}][text]" rows="3"></textarea>
 			</p>
-			<p class="form-field palaplast-custom-row-style-field">
-				<label><?php esc_html_e( 'Style', 'palaplast' ); ?></label>
-				<select name="palaplast_custom_rows[{{{data.index}}}][style]">
-					<option value="info"><?php esc_html_e( 'Info', 'palaplast' ); ?></option>
-					<option value="warning"><?php esc_html_e( 'Warning', 'palaplast' ); ?></option>
-					<option value="note"><?php esc_html_e( 'Note', 'palaplast' ); ?></option>
+			<p class="form-field palaplast-custom-row-background-color-field">
+				<label><?php esc_html_e( 'Background Color', 'palaplast' ); ?></label>
+				<select name="palaplast_custom_rows[{{{data.index}}}][background_color]">
+					<?php foreach ( $color_options as $color_value => $color_label ) : ?>
+						<option value="<?php echo esc_attr( $color_value ); ?>"><?php echo esc_html( $color_label ); ?></option>
+					<?php endforeach; ?>
 				</select>
+			</p>
+			<p class="form-field palaplast-custom-row-text-color-field">
+				<label><?php esc_html_e( 'Text Color', 'palaplast' ); ?></label>
+				<input type="color" name="palaplast_custom_rows[{{{data.index}}}][text_color]" value="#000000" />
 			</p>
 			<p class="form-field palaplast-custom-row-enabled-field">
 				<label><?php esc_html_e( 'Enabled', 'palaplast' ); ?></label>
@@ -415,6 +420,8 @@ function palaplast_render_variation_table_custom_rows_field() {
 		#palaplast-custom-rows-repeater .form-field:last-child{margin-bottom:0}
 		#palaplast-custom-rows-repeater label{display:block;margin-bottom:4px}
 		#palaplast-custom-rows-repeater textarea,#palaplast-custom-rows-repeater input[type="number"],#palaplast-custom-rows-repeater select{width:100%;max-width:420px}
+		#palaplast-custom-rows-repeater input[type="color"]{width:80px;max-width:80px;padding:0 2px}
+		#palaplast-custom-rows-repeater .palaplast-custom-row-position-field input{text-align:center}
 	</style>
 	<?php
 }
@@ -441,16 +448,15 @@ function palaplast_save_variation_table_custom_rows_field( $product ) {
 		$position = isset( $row['position'] ) ? (int) $row['position'] : 1;
 		$position = max( 1, $position );
 
-		$style = isset( $row['style'] ) ? sanitize_key( (string) $row['style'] ) : 'info';
-		if ( ! in_array( $style, array( 'info', 'warning', 'note' ), true ) ) {
-			$style = 'info';
-		}
+		$background_color = isset( $row['background_color'] ) ? sanitize_hex_color( (string) $row['background_color'] ) : '';
+		$text_color       = isset( $row['text_color'] ) ? sanitize_hex_color( (string) $row['text_color'] ) : '';
 
 		$clean_rows[] = array(
-			'position' => $position,
-			'text'     => $text,
-			'style'    => $style,
-			'enabled'  => ! empty( $row['enabled'] ),
+			'position'         => $position,
+			'text'             => $text,
+			'background_color' => $background_color ? $background_color : '',
+			'text_color'       => $text_color ? $text_color : '',
+			'enabled'          => ! empty( $row['enabled'] ),
 		);
 	}
 

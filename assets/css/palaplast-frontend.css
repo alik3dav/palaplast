@@ -91,7 +91,7 @@
 
 .palaplast-table .vt-custom-row td {
     white-space: normal;
-    text-align: left;
+    text-align: center;
     padding: 0 8px
 }
 
@@ -100,20 +100,6 @@
     line-height: 2
 }
 
-.palaplast-table .vt-custom-row--info td {
-    background: #edf0f2;
-    color: #1f3a5f
-}
-
-.palaplast-table .vt-custom-row--warning td {
-    background: #fff7e6;
-    color: #7a4b00
-}
-
-.palaplast-table .vt-custom-row--note td {
-    background: #f6f6f6;
-    color: #444
-}
 
 .palaplast-table .palaplast-code-cell {
     display: inline-flex;

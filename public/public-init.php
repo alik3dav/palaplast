@@ -213,6 +213,7 @@ function palaplast_get_variation_table_allowed_html() {
 	$allowed_html['td']    = array(
 		'class'   => true,
 		'colspan' => true,
+		'style'   => true,
 	);
 	$allowed_html['button'] = array(
 		'aria-label'      => true,
@@ -405,15 +406,14 @@ function palaplast_get_product_custom_variation_rows( $product_id ) {
 			continue;
 		}
 
-		$style = isset( $row['style'] ) ? sanitize_key( (string) $row['style'] ) : 'info';
-		if ( ! in_array( $style, array( 'info', 'warning', 'note' ), true ) ) {
-			$style = 'info';
-		}
+		$background_color = isset( $row['background_color'] ) ? sanitize_hex_color( (string) $row['background_color'] ) : '';
+		$text_color       = isset( $row['text_color'] ) ? sanitize_hex_color( (string) $row['text_color'] ) : '';
 
 		$clean_rows[] = array(
-			'position' => max( 1, (int) $row['position'] ),
-			'text'     => $text,
-			'style'    => $style,
+			'position'         => max( 1, (int) $row['position'] ),
+			'text'             => $text,
+			'background_color' => $background_color ? $background_color : '',
+			'text_color'       => $text_color ? $text_color : '',
 		);
 	}
 
@@ -438,15 +438,25 @@ function palaplast_render_custom_variation_table_row( $custom_row, $colspan ) {
 		),
 	);
 
-	$style      = isset( $custom_row['style'] ) ? sanitize_key( (string) $custom_row['style'] ) : 'info';
-	$text       = isset( $custom_row['text'] ) ? (string) $custom_row['text'] : '';
-	$safe_text  = wp_kses( $text, $allowed_tags );
-	$style      = in_array( $style, array( 'info', 'warning', 'note' ), true ) ? $style : 'info';
-	$colspan    = max( 1, (int) $colspan );
-	$row_class  = sprintf( 'vt-custom-row vt-custom-row--%s', $style );
-	$content    = nl2br( $safe_text );
+	$text             = isset( $custom_row['text'] ) ? (string) $custom_row['text'] : '';
+	$background_color = isset( $custom_row['background_color'] ) ? sanitize_hex_color( (string) $custom_row['background_color'] ) : '';
+	$text_color       = isset( $custom_row['text_color'] ) ? sanitize_hex_color( (string) $custom_row['text_color'] ) : '';
+	$safe_text        = wp_kses( $text, $allowed_tags );
+	$colspan          = max( 1, (int) $colspan );
+	$content          = nl2br( $safe_text );
+	$styles           = array();
 
-	echo '<tr class="' . esc_attr( $row_class ) . '"><td colspan="' . esc_attr( (string) $colspan ) . '"><div class="vt-custom-row__content">' . wp_kses( $content, $allowed_tags ) . '</div></td></tr>';
+	if ( $background_color ) {
+		$styles[] = 'background-color: ' . $background_color;
+	}
+
+	if ( $text_color ) {
+		$styles[] = 'color: ' . $text_color;
+	}
+
+	$style_attribute = empty( $styles ) ? '' : ' style="' . esc_attr( implode( '; ', $styles ) ) . '"';
+
+	echo '<tr class="vt-custom-row"><td colspan="' . esc_attr( (string) $colspan ) . '"' . $style_attribute . '><div class="vt-custom-row__content">' . wp_kses( $content, $allowed_tags ) . '</div></td></tr>';
 }
 
 function palaplast_get_variation_header_html( $label ) {
